@@ -5,13 +5,13 @@
   box-sizing: border-box;
   --basic-gap: 3rem;
   --basic-container-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-
-
+  --brand-color-orange: #FDBF6F;
+  --brand-color-yellow: #FFFFBF;
 }
 
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Tahoma, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 

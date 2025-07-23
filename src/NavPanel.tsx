@@ -2,7 +2,7 @@ import Map from "./Map";
 
 interface NavPanelProps {
   currentNeighborhood: string;
-  setCurrentNeighborhood: () => string
+  setCurrentNeighborhood: (e:string) => void
 }
 
 function NavPanel ({ currentNeighborhood, setCurrentNeighborhood }:NavPanelProps) {

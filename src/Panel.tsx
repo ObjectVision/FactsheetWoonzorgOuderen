@@ -1,8 +1,9 @@
+import StackedBarGraph from "./GraphStakedBar";
 import "./Panel.css";
 
 interface PanelProps {
     title: string;
-    data: number[]
+    data: JSON
   }
 
   
@@ -13,7 +14,7 @@ function Panel({title, data}:PanelProps) {
     <h1 className="panel-title">{title}</h1>
     <div className="panel-graph">
         {/* graph hier */}
-        <svg><rect fill='black'></rect></svg>
+        <StackedBarGraph data={data}/>
     </div>
   </div>
   )

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 interface MapProps {
     currentNeighborhood: string;
-    setCurrentNeighborhood: (e:string) => string
+    setCurrentNeighborhood: (e:string) => void
 }
 
 function Map({ currentNeighborhood, setCurrentNeighborhood }:MapProps) {
