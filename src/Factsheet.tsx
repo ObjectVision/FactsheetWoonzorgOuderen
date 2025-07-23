@@ -10,7 +10,7 @@ function Factsheet({currentNeighborhood}:FactsheetProps) {
       <div id="factsheet">
       <h3>Info over {currentNeighborhood}</h3>
       <h1><span>6.035</span> Kwetsbare ouderen</h1>
-        {/* <Panel title="Geschiktheid totale Woningvoorraad" data={[30,40,30]}/> */}
+        <Panel title="Geschiktheid totale Woningvoorraad" data={batdata.default}/>
         <Panel title="Geschiktheid corporatiebezit BAT" data={batdata.default}/>
       </div>
     )
