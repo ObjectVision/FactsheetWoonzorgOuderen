@@ -4,6 +4,8 @@
   margin: 0;
   box-sizing: border-box;
   --basic-gap: 3rem;
+  --basic-container-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
 
 }
 
