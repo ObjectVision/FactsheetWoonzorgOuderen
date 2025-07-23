@@ -1,6 +1,10 @@
 import Panel from "./Panel"
 
-function Factsheet({currentNeighborhood}) {
+interface FactsheetProps {
+  currentNeighborhood: string;
+}
+
+function Factsheet({currentNeighborhood}:FactsheetProps) {
 
     return (
       <div id="factsheet">

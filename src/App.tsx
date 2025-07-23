@@ -4,7 +4,8 @@ import NavPanel from "./NavPanel";
 import Factsheet from "./Factsheet";
 
 function App() {
-  const [currentNeighborhood, setCurrentNeighborhood] = useState("Test wijk");
+  const [currentNeighborhood, setCurrentNeighborhood] = useState<string>("Test wijk");
+
   useEffect(() => {
     console.log(currentNeighborhood);
   }, [currentNeighborhood]);

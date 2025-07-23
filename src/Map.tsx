@@ -2,7 +2,12 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef, useState } from "react";
 
-function Map({ currentNeighborhood, setCurrentNeighborhood }) {
+interface MapProps {
+    currentNeighborhood: string;
+    setCurrentNeighborhood: (e:string) => string
+}
+
+function Map({ currentNeighborhood, setCurrentNeighborhood }:MapProps) {
   
   const [mapReady, setMapReady] = useState(false);
 
@@ -15,10 +20,8 @@ function Map({ currentNeighborhood, setCurrentNeighborhood }) {
       zoom: 8,
       hash: true,
       center: [5.879,51.173]
-   
     });
 
-    console.log("test")
     map.on('click', (e) => {
         console.log(e)
         setCurrentNeighborhood("test wijk nr 2")

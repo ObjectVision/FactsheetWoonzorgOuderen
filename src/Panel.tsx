@@ -1,6 +1,12 @@
 import "./Panel.css";
 
-function Panel({title, data}) {
+interface PanelProps {
+    title: string;
+    data: number[]
+  }
+
+  
+function Panel({title, data}:PanelProps) {
 
   return (
   <div className="panel-container">
