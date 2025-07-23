@@ -1,0 +1,29 @@
+.values {
+    display: flex;
+    flex-wrap: nowrap;
+    /* justify-content: space-between; */
+  }
+  
+/*   
+
+.grafiek,
+.values path {
+  stroke: var(--colorPaletteGray600);
+}
+
+.grafiek p {
+  color: var(--colorPaletteGray700);
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.titles {
+  text-align: center;
+}
+
+.rectangle p {
+  text-align: right;
+  color: #ffffff;
+  padding-right: 5px;
+} */
