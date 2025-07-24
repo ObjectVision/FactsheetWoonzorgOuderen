@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import wijken from "/cbs_wijken_limburg.json?url";
+import wijken from "./assets/cbs_wijken_limburg.json?url";
 //import wijken from "/cbs_wijken_limburg.fgb?url";
 import {DeckGL} from '@deck.gl/react';
 import {MapView, Deck, OrthographicView} from '@deck.gl/core';
@@ -43,37 +43,13 @@ function Map() {
           }),
           new GeoJsonLayer({
             id: 'GeoJsonLayer', 
-            data: {
-              type: 'FeatureCollection',
-              features: [
-                {
-                  type: 'Feature',
-                  properties: {
-                    name: 'Limburg'
-                  },
-                  geometry: {
-                    type: 'Polygon',
-                    coordinates: [
-                      [
-                        [5.864, 50.750],
-                        [6.020, 50.870],
-                        [6.040, 51.050],
-                        [5.900, 51.300],
-                        [5.500, 51.250],
-                        [5.520, 50.950],
-                        [5.864, 50.750]
-                      ]
-                    ]
-                  }
-                }
-              ]
-            },
+            data: wijken,
             opacity: 0.8,
-            stroked: false,
+            stroked: true,
             filled: true,
-            getLineColor: [255, 255, 255],
-            getFillColor: [160, 160, 180, 200],
-            getLineWidth: 20,
+            getLineColor: [0, 0, 0, 100],
+            getFillColor: [72, 191, 145, 256],
+            getLineWidth: 50,
             getPointRadius: 4,
             getTextSize: 12
         })
