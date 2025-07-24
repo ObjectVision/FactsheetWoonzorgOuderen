@@ -49,9 +49,10 @@ function Map() {
             filled: true,
             getLineColor: [256, 256, 256, 100],
             getFillColor: [72, 191, 145, 256],
-            getLineWidth: 20,
+            getLineWidth: 5,
             getPointRadius: 4,
-            getTextSize: 12
+            getTextSize: 12,
+            lineWidthMinPixels: 1
         })
         ];
 
