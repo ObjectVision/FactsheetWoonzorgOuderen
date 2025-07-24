@@ -2,19 +2,33 @@ import { useEffect, useState } from "react";
 import wijken from "./assets/cbs_wijken_limburg.json?url";
 //import wijken from "/cbs_wijken_limburg.fgb?url";
 import {DeckGL} from '@deck.gl/react';
-import {MapView, Deck, OrthographicView} from '@deck.gl/core';
+import type {PickingInfo} from '@deck.gl/core';
 import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers';
 import {TileLayer} from '@deck.gl/geo-layers';
 //import { } from '@loaders.gl/flatgeobuf';
 //import {FlatGeoBufLoader} from '@loaders.gl/flatgeobuf';
 
 const INITIAL_VIEW_STATE:any = {
-  longitude: 5.606440797330272,
-  zoom: 7,
-  latitude: 52.062958234585004,
+  longitude: 5.844702066665236,
+  zoom: 10,
+  latitude: 50.91319982389477,
   pitch: 0,
   bearing: 0
 };
+
+function getTooltip({object}: any) {
+  if (object == undefined)
+    return null;
+  
+  return object && {
+    html: `<div>${object.properties.naam}</div>`,
+    style: {
+      backgroundColor: 'rgba(253, 253, 253, 0.85)',
+      color:[0,0,0,256],
+      fontSize: '0.8em'
+    }
+  };
+}
 
 function Map() {
 
@@ -22,7 +36,7 @@ function Map() {
           new TileLayer<ImageBitmap>({
             data: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
             maxRequests: 20,
-            pickable: true,
+            pickable: false,
             autoHighlight: false,
             highlightColor: [60, 60, 60, 40],
             minZoom: 0,
@@ -52,14 +66,16 @@ function Map() {
             getLineWidth: 5,
             getPointRadius: 4,
             getTextSize: 12,
-            lineWidthMinPixels: 1
+            lineWidthMinPixels: 1,
+            pickable: true,
         })
         ];
 
   return <DeckGL
       initialViewState={INITIAL_VIEW_STATE}
       controller
-      layers={layers} />;
+      layers={layers}
+      getTooltip={getTooltip} />;
 }
 
 export default Map;
