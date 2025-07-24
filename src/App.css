@@ -1,12 +1,12 @@
-#app-container{
+/*#app-container{
   width:100vw;
   height:100vh;
   display: grid;
   grid-template-columns: 1fr 3fr;
   color:black;
-}
+}*/
 
-#nav-panel {
+/*#nav-panel {
   grid-column: 1/span 1;
   padding: var(--basic-gap);
 }
@@ -25,4 +25,4 @@
   width: 100%;
   height: 50vh;
   box-shadow: var( --basic-container-shadow)
-}
+}*/
