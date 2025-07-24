@@ -44,12 +44,12 @@ function Map() {
           new GeoJsonLayer({
             id: 'GeoJsonLayer', 
             data: wijken,
-            opacity: 0.8,
+            opacity: 1.0,
             stroked: true,
             filled: true,
-            getLineColor: [0, 0, 0, 100],
+            getLineColor: [256, 256, 256, 100],
             getFillColor: [72, 191, 145, 256],
-            getLineWidth: 50,
+            getLineWidth: 20,
             getPointRadius: 4,
             getTextSize: 12
         })
