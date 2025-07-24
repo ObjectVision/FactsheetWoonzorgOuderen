@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState} from "react";
 import "./App.css";
-import NavPanel from "./NavPanel";
-import Factsheet from "./Factsheet";
-import Map from "./Map"
+import Map from "./Map";
+import SwipeableTemporaryDrawer from "./Drawer.tsx";
 
 function App() {
   const [currentNeighborhood, setCurrentNeighborhood] = useState<string>("Test wijk");
@@ -19,8 +18,13 @@ function App() {
       <Factsheet currentNeighborhood={currentNeighborhood} />
     </div>*/
   return (
-    <div id="app-main-area">
-      <Map/>
+    <div>
+      <div id="details-area">
+        <SwipeableTemporaryDrawer/>
+      </div>
+      <div id="map-area">
+        <Map/>
+      </div>
     </div>
   );
 }

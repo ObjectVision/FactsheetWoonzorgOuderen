@@ -1,3 +1,10 @@
+
+#details-area {
+z-index: 1;
+position: relative;
+}
+
+
 /*#app-container{
   width:100vw;
   height:100vh;
