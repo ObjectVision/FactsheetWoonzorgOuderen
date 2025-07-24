@@ -4,27 +4,18 @@ import {DeckGL} from '@deck.gl/react';
 import {MapView, Deck, OrthographicView} from '@deck.gl/core';
 import {BitmapLayer, PathLayer} from '@deck.gl/layers';
 import {TileLayer} from '@deck.gl/geo-layers';
-interface MapProps {
-  currentNeighborhood: string;
-  setCurrentNeighborhood: (e: string) => void;
-}
+
+const INITIAL_VIEW_STATE:any = {
+  longitude: 5.606440797330272,
+  zoom: 7,
+  latitude: 52.062958234585004,
+  pitch: 0,
+  bearing: 0
+};
 
 function Map() {
-  const [mapReady, setMapReady] = useState(false);
 
-  useEffect(() => {
-    const deck = new Deck({
-      canvas: 'deck-canvas',
-      //views: new OrthographicView(),
-      initialViewState: {
-        longitude: 5.606440797330272,
-        zoom: 7,
-        latitude: 52.062958234585004,
-        pitch: 0,
-        bearing: 0
-      },
-      controller: true,
-      layers: [
+  const layers = [
           new TileLayer<ImageBitmap>({
             data: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
             maxRequests: 20,
@@ -47,11 +38,12 @@ function Map() {
               ];
             }
           })
-        ]
-      });
-  });
+        ];
 
-  return <canvas id="deck-canvas"></canvas>;
+  return <DeckGL
+      initialViewState={INITIAL_VIEW_STATE}
+      controller
+      layers={layers} />;
 }
 
 export default Map;
