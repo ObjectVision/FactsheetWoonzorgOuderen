@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
-//import geodata from "/cbs_wijken_limburg.json?url";
+import wijken from "/cbs_wijken_limburg.json?url";
+//import wijken from "/cbs_wijken_limburg.fgb?url";
 import {DeckGL} from '@deck.gl/react';
 import {MapView, Deck, OrthographicView} from '@deck.gl/core';
-import {BitmapLayer, PathLayer} from '@deck.gl/layers';
+import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers';
 import {TileLayer} from '@deck.gl/geo-layers';
+//import { } from '@loaders.gl/flatgeobuf';
+//import {FlatGeoBufLoader} from '@loaders.gl/flatgeobuf';
 
 const INITIAL_VIEW_STATE:any = {
   longitude: 5.606440797330272,
@@ -37,7 +40,43 @@ function Map() {
                 })
               ];
             }
-          })
+          }),
+          new GeoJsonLayer({
+            id: 'GeoJsonLayer', 
+            data: {
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  properties: {
+                    name: 'Limburg'
+                  },
+                  geometry: {
+                    type: 'Polygon',
+                    coordinates: [
+                      [
+                        [5.864, 50.750],
+                        [6.020, 50.870],
+                        [6.040, 51.050],
+                        [5.900, 51.300],
+                        [5.500, 51.250],
+                        [5.520, 50.950],
+                        [5.864, 50.750]
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            opacity: 0.8,
+            stroked: false,
+            filled: true,
+            getLineColor: [255, 255, 255],
+            getFillColor: [160, 160, 180, 200],
+            getLineWidth: 20,
+            getPointRadius: 4,
+            getTextSize: 12
+        })
         ];
 
   return <DeckGL
