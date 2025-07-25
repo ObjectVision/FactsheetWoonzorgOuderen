@@ -32,8 +32,8 @@ function getTooltip({object}: PickingInfo) {
 
 function Map() {
   const [isHovering, setIsHovering] = useState(false);
-  const layers = [
-          new TileLayer<ImageBitmap>({
+  
+  const background_layer = new TileLayer<ImageBitmap>({
             data: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
             maxRequests: 20,
             pickable: false,
@@ -54,8 +54,9 @@ function Map() {
                 })
               ];
             }
-          }),
-          new GeoJsonLayer({
+          });
+
+  const navigation_layer = new GeoJsonLayer({
             id: 'GeoJsonLayer', 
             data: wijken,
             opacity: 1.0,
@@ -72,6 +73,10 @@ function Map() {
             lineWidthMinPixels: 1,
             pickable: true,
         })
+
+  const layers = [
+          background_layer,
+          navigation_layer
         ];
 
   return <DeckGL
