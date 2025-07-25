@@ -34,19 +34,6 @@ function Map() {
   const [isHovering, setIsHovering] = useState(false);
   const [selectedPolygons, setSelectedPolygons] = useState<GeoJSON.Feature[]>([]);
 
-  const handleClick = ({object}: {object: GeoJSON.Feature}) => {
-    if (!object) return;
-
-    setSelectedPolygons(prev => {
-      // Prevent duplicates by feature ID or other property
-      const exists = prev.find(f => f.id === object.id);
-      if (exists) return prev;
-
-      const updated = [...prev, object];
-      return updated.slice(-3); // Keep last 3
-    });
-  };
-
   const background_layer = new TileLayer<ImageBitmap>({
             data: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
             maxRequests: 20,
