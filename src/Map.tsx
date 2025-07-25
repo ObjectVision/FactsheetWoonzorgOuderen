@@ -5,9 +5,8 @@ import {DeckGL} from '@deck.gl/react';
 import type {PickingInfo} from '@deck.gl/core';
 import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers';
 import {TileLayer} from '@deck.gl/geo-layers';
-//import { } from '@loaders.gl/flatgeobuf';
-//import {FlatGeoBufLoader} from '@loaders.gl/flatgeobuf';
-import {MVTLayer} from '@deck.gl/geo-layers';
+//import {FlatGeoBufLoader} from '@loaders.gl';
+
 
 const INITIAL_VIEW_STATE:any = {
   longitude: 5.844702066665236,
@@ -17,7 +16,7 @@ const INITIAL_VIEW_STATE:any = {
   bearing: 0
 };
 
-function getTooltip({object}: any) {
+function getTooltip({object}: PickingInfo) {
   if (object == undefined)
     return null;
   
@@ -32,7 +31,6 @@ function getTooltip({object}: any) {
 }
 
 function Map() {
-
   const layers = [
           new TileLayer<ImageBitmap>({
             data: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
@@ -56,41 +54,6 @@ function Map() {
               ];
             }
           }),
-          /*new MVTLayer({
-            id: 'MVTLayer',
-            data: [
-              'https://tiles-a.basemaps.cartocdn.com/vectortiles/carto.streets/v1/{z}/{x}/{y}.mvt'
-            ],
-            minZoom: 0,
-            maxZoom: 14,
-            getFillColor: (f: any) => {
-              switch (f.properties.layerName) {
-                case 'poi':
-                  return [255, 0, 0];
-                case 'water':
-                  return [120, 150, 180];
-                case 'building':
-                  return [218, 218, 218];
-                default:
-                  return [240, 240, 240];
-              }
-            },
-            getLineWidth: (f: any) => {
-              switch (f.properties.class) {
-                case 'street':
-                  return 6;
-                case 'motorway':
-                  return 10;
-                default:
-                  return 1;
-              }
-            },
-            getLineColor: [192, 192, 192],
-            getPointRadius: 2,
-            pointRadiusUnits: 'pixels',
-            stroked: false,
-            picking: true
-          }),*/
           new GeoJsonLayer({
             id: 'GeoJsonLayer', 
             data: wijken,
