@@ -34,19 +34,6 @@ const StyledBox = styled('div')(({ theme }) => ({
   }),
 }));
 
-const Puller = styled('div')(({ theme }) => ({
-  width: 30,
-  height: 6,
-  backgroundColor: grey[300],
-  borderRadius: 3,
-  position: 'absolute',
-  top: 8,
-  left: 'calc(50% - 15px)',
-  ...theme.applyStyles('dark', {
-    backgroundColor: grey[900],
-  }),
-}));
-
 export default function SwipeableEdgeDrawer(props: Props) {
   const { window } = props;
   const [open, setOpen] = React.useState(false);
@@ -69,9 +56,21 @@ export default function SwipeableEdgeDrawer(props: Props) {
           },
         }}
       />
-      <Box sx={{ textAlign: 'center', pt: 1 }}>
-        <Button onClick={toggleDrawer(true)}>Open</Button>
+
+      <Box
+            sx={{
+            position: 'fixed',      // Use 'absolute' if you want it inside a parent
+            bottom: 20,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1300,
+            }}
+        >
+            <Button variant="contained" color="primary" onClick={toggleDrawer(true)}>
+            Details
+            </Button>
       </Box>
+
       <SwipeableDrawer
         container={container}
         anchor="bottom"
@@ -82,22 +81,8 @@ export default function SwipeableEdgeDrawer(props: Props) {
         disableSwipeToOpen={false}
         keepMounted
       >
-        <StyledBox
-          sx={{
-            position: 'absolute',
-            top: -drawerBleeding,
-            borderTopLeftRadius: 8,
-            borderTopRightRadius: 8,
-            visibility: 'visible',
-            right: 0,
-            left: 0,
-          }}
-        >
-          <Puller />
-          <Typography sx={{ p: 2, color: 'text.secondary' }}>51 results</Typography>
-        </StyledBox>
-        <StyledBox sx={{ px: 2, pb: 2, height: '100%', overflow: 'auto' }}>
-          <Skeleton variant="rectangular" height="100%" />
+
+        <StyledBox sx={{ px: 2, pb: 2, height: '100%', overflow: 'auto'}}>
         </StyledBox>
       </SwipeableDrawer>
     </Root>
