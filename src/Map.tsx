@@ -31,6 +31,7 @@ function getTooltip({object}: PickingInfo) {
 }
 
 function Map() {
+  const [isHovering, setIsHovering] = useState(false);
   const layers = [
           new TileLayer<ImageBitmap>({
             data: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
@@ -60,6 +61,9 @@ function Map() {
             opacity: 1.0,
             stroked: true,
             filled: true,
+            onHover: ({object}) => {
+              setIsHovering(Boolean(object));
+            },
             getLineColor: [256, 256, 256, 100],
             getFillColor: [72, 191, 145, 256],
             getLineWidth: 5,
@@ -74,6 +78,9 @@ function Map() {
       initialViewState={INITIAL_VIEW_STATE}
       controller
       layers={layers}
+      getCursor={({ isDragging }) =>
+        isDragging ? 'grabbing' : isHovering ? 'pointer' : 'default'
+      }
       getTooltip={getTooltip} />;
 }
 
