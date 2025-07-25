@@ -35,15 +35,11 @@ const StyledBox = styled('div')(({ theme }) => ({
 }));
 
 export default function SwipeableEdgeDrawer(props: Props) {
-  const { window } = props;
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
-
-  // This is used only for the example
-  const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
     <Root>
@@ -59,20 +55,19 @@ export default function SwipeableEdgeDrawer(props: Props) {
 
       <Box
             sx={{
-            position: 'fixed',      // Use 'absolute' if you want it inside a parent
+            position: 'fixed',
             bottom: 20,
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 1300,
             }}
         >
-            <Button variant="contained" color="primary" onClick={toggleDrawer(true)}>
+            <Button variant="contained" style={{backgroundColor: '#48BF91',}} color="primary" onClick={toggleDrawer(true)}>
             Details
             </Button>
       </Box>
 
       <SwipeableDrawer
-        container={container}
         anchor="bottom"
         open={open}
         onClose={toggleDrawer(false)}
