@@ -3,7 +3,7 @@ import wijken from "./assets/cbs_wijken_limburg.json?url";
 //import wijken from "/cbs_wijken_limburg.fgb?url";
 import {DeckGL} from '@deck.gl/react';
 import type {PickingInfo} from '@deck.gl/core';
-import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers';
+import {BitmapLayer, GeoJsonLayer, PolygonLayer} from '@deck.gl/layers';
 import {TileLayer} from '@deck.gl/geo-layers';
 //import {FlatGeoBufLoader} from '@loaders.gl';
 
@@ -32,7 +32,21 @@ function getTooltip({object}: PickingInfo) {
 
 function Map() {
   const [isHovering, setIsHovering] = useState(false);
-  
+  const [selectedPolygons, setSelectedPolygons] = useState<GeoJSON.Feature[]>([]);
+
+  const handleClick = ({object}: {object: GeoJSON.Feature}) => {
+    if (!object) return;
+
+    setSelectedPolygons(prev => {
+      // Prevent duplicates by feature ID or other property
+      const exists = prev.find(f => f.id === object.id);
+      if (exists) return prev;
+
+      const updated = [...prev, object];
+      return updated.slice(-3); // Keep last 3
+    });
+  };
+
   const background_layer = new TileLayer<ImageBitmap>({
             data: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
             maxRequests: 20,
@@ -57,13 +71,25 @@ function Map() {
           });
 
   const navigation_layer = new GeoJsonLayer({
-            id: 'GeoJsonLayer', 
+            id: 'navigation-layer', 
             data: wijken,
             opacity: 1.0,
             stroked: true,
             filled: true,
             onHover: ({object}) => {
               setIsHovering(Boolean(object));
+            },
+            onClick: ({object}: any) => {
+              if (!object) return;
+
+              setSelectedPolygons(prev => {
+                // Prevent duplicates by feature ID or other property
+                const exists = prev.find(f => f.properties!.WK_CODE === object.properties.WK_CODE);
+                if (exists) return prev;
+
+                const updated = [...prev, object];
+                return updated.slice(-3);
+              });
             },
             getLineColor: [256, 256, 256, 100],
             getFillColor: [72, 191, 145, 256],
@@ -74,9 +100,23 @@ function Map() {
             pickable: true,
         })
 
+  const selection_layer = new GeoJsonLayer({
+    id: 'selection-layer',
+    data: {
+      type: 'FeatureCollection',
+      features: selectedPolygons,
+    },
+    filled: false,
+    stroked: true,
+    getLineWidth: 42,
+    lineWidthMinPixels: 1,
+    getLineColor: [200, 0, 0, 200],
+});
+
   const layers = [
           background_layer,
-          navigation_layer
+          navigation_layer,
+          selection_layer
         ];
 
   return <DeckGL
