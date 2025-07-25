@@ -1,7 +1,7 @@
 import { useEffect, useState} from "react";
 import "./App.css";
 import Map from "./Map";
-import SwipeableTemporaryDrawer from "./Drawer.tsx";
+import SwipeableEdgeDrawer from "./Drawer.tsx";
 
 function App() {
   const [currentNeighborhood, setCurrentNeighborhood] = useState<string>("Test wijk");
@@ -20,7 +20,7 @@ function App() {
   return (
     <div>
       <div id="details-area">
-        <SwipeableTemporaryDrawer/>
+        <SwipeableEdgeDrawer/>
       </div>
       <div id="map-area">
         <Map/>
