@@ -30,9 +30,14 @@ function getTooltip({object}: PickingInfo) {
   };
 }
 
-function Map() {
+interface ChildProps {
+  selectedPolygons: GeoJSON.Feature[];
+  setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>;
+}
+
+function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   const [isHovering, setIsHovering] = useState(false);
-  const [selectedPolygons, setSelectedPolygons] = useState<GeoJSON.Feature[]>([]);
+  //const [selectedPolygons, setSelectedPolygons] = useState<GeoJSON.Feature[]>([]);
 
   const background_layer = new TileLayer<ImageBitmap>({
             data: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
