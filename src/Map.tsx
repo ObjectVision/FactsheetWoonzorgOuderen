@@ -36,6 +36,7 @@ function Map() {
 
   const background_layer = new TileLayer<ImageBitmap>({
             data: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+            id: 'background_layer',
             maxRequests: 20,
             pickable: false,
             autoHighlight: false,
@@ -70,12 +71,13 @@ function Map() {
               if (!object) return;
 
               setSelectedPolygons(prev => {
-                // Prevent duplicates by feature ID or other property
-                const exists = prev.find(f => f.properties!.WK_CODE === object.properties.WK_CODE);
-                if (exists) return prev;
+                const maxFeatures = 3;
+                const index = prev.findIndex((f) => f.properties!.WK_CODE === object.properties.WK_CODE);
+                if (index!==-1)
+                  return prev.filter((_, i) => i !== index);
 
                 const updated = [...prev, object];
-                return updated.slice(-3);
+                return updated.slice(-maxFeatures);
               });
             },
             getLineColor: [256, 256, 256, 100],
