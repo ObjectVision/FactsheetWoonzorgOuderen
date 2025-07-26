@@ -4,6 +4,7 @@ import Map from "./Map";
 import SwipeableEdgeDrawer from "./Drawer.tsx";
 import Factsheet from "./Factsheet.tsx"
 import FeatureCards from './FeatureCards';
+import SearchAppBar from './AppBar.tsx';
 
 function App() {
   const [currentNeighborhood, setCurrentNeighborhood] = useState<string>("Test wijk");
@@ -23,6 +24,7 @@ function App() {
   return (
     <div>
       <div id="details-area">
+        <SearchAppBar/>
         <SwipeableEdgeDrawer/>
         <FeatureCards selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons} />
       </div>
