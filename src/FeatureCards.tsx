@@ -29,15 +29,12 @@ export default function FeatureCards({ selectedPolygons, setSelectedPolygons }: 
       }}
     >
       {selectedPolygons.map((feature:GeoJSON.Feature, idx:number) => (
-        <Card key={idx} sx={{ minWidth: 200 }}>
+        <Card key={idx} sx={{ minWidth: 200, maxWidth:200}}>
           <CardContent>
-            <Typography variant="h6">Feature {idx + 1}</Typography>
-            {feature.properties &&
-              Object.entries(feature.properties).map(([key, value]) => (
-                <Typography key={key} variant="body2" color="text.secondary">
-                  <strong>{key}:</strong> {String(value)}
-                </Typography>
-              ))}
+            <Typography variant="h6">{feature.properties!.naam}</Typography>
+            <Typography variant="body2" color="text.secondary">
+                <strong>WK_CODE:</strong> {feature.properties!.WK_CODE}
+            </Typography>
           </CardContent>
         </Card>
       ))}
