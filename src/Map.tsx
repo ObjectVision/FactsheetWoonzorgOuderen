@@ -80,6 +80,9 @@ function Map() {
                 return updated.slice(-maxFeatures);
               });
             },
+            parameters: {
+              depthTest: false
+            },
             getLineColor: [256, 256, 256, 100],
             getFillColor: [72, 191, 145, 256],
             getLineWidth: 5,
