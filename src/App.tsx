@@ -6,6 +6,7 @@ import Factsheet from "./Factsheet.tsx"
 import FeatureCards from './FeatureCards';
 import SearchAppBar from './AppBar.tsx';
 import SubjectNav from './SubjectNav.tsx';
+import Controls from './Controls.tsx'
 
 function App() {
   const [currentNeighborhood, setCurrentNeighborhood] = useState<string>("Test wijk");
@@ -28,6 +29,7 @@ function App() {
         <SearchAppBar/>
         <SubjectNav/>
         <SwipeableEdgeDrawer/>
+        <Controls/>
         <FeatureCards selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons} />
       </div>
       
