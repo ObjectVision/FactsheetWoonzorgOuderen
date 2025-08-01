@@ -7,6 +7,9 @@ import FeatureCards from './FeatureCards';
 import SearchAppBar from './AppBar.tsx';
 import SubjectNav from './SubjectNav.tsx';
 import Controls from './Controls.tsx'
+import TreeviewControl from "./TreeviewControl.tsx";
+import TitleBox from './Title.tsx'
+import LayerTreeView from './LayerControl.tsx'
 
 function App() {
   const [currentNeighborhood, setCurrentNeighborhood] = useState<string>("Test wijk");
@@ -26,9 +29,9 @@ function App() {
   return (
     <div>
       <div id="details-area">
-        <SearchAppBar/>
-        <SubjectNav/>
-        <SwipeableEdgeDrawer/>
+        <TitleBox/>
+        <LayerTreeView/>
+        <TreeviewControl/>
         <Controls/>
         <FeatureCards selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons} />
       </div>

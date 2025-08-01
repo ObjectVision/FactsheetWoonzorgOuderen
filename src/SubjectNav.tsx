@@ -1,37 +1,75 @@
 import React from 'react';
-import { Paper, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-
-const availableMaps = ['Topographic', 'Satellite', 'Greyscale', 'Hybrid'];
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Paper,
+} from '@mui/material';
 
 export default function SubjectNav() {
+  const [layer1, setLayer1] = React.useState('');
+  const [layer2, setLayer2] = React.useState('');
+  const [layer3, setLayer3] = React.useState('');
+
   return (
-    <Box
+    <Paper
+      elevation={4}
       sx={{
         position: 'fixed',
-        top: 72, // Just below AppBar (64px default AppBar height + spacing)
+        top: 100,
         left: '50%',
         transform: 'translateX(-50%)',
-        zIndex: 1200,
+        padding: 2,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 2,
+        zIndex: 10,
       }}
     >
-      <Paper elevation={3} sx={{ px: 2, py: 1 }}>
-        <FormControl variant="standard" fullWidth>
-          <InputLabel id="map-select-label">Select Map</InputLabel>
-          <Select
-            labelId="map-select-label"
-            //value={selectedMap}
-            //onChange={(e) => onChange(e.target.value)}
-            label="Select Map"
-            sx={{ minWidth: 200 }}
-          >
-            {availableMaps.map((mapName) => (
-              <MenuItem key={mapName} value={mapName}>
-                {mapName}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Paper>
-    </Box>
+      <FormControl size="small">
+        <InputLabel id="layer1-label">Layer 1</InputLabel>
+        <Select
+          labelId="layer1-label"
+          value={layer1}
+          label="Layer 1"
+          onChange={(e) => setLayer1(e.target.value)}
+        >
+          <MenuItem value="a">Option A</MenuItem>
+          <MenuItem value="b">Option B</MenuItem>
+        </Select>
+      </FormControl>
+
+      <Box>en</Box>
+
+      <FormControl size="small">
+        <InputLabel id="layer2-label">Layer 2</InputLabel>
+        <Select
+          labelId="layer2-label"
+          value={layer2}
+          label="Layer 2"
+          onChange={(e) => setLayer2(e.target.value)}
+        >
+          <MenuItem value="x">Option X</MenuItem>
+          <MenuItem value="y">Option Y</MenuItem>
+        </Select>
+      </FormControl>
+
+      <Box>voor</Box>
+
+      <FormControl size="small">
+        <InputLabel id="layer3-label">gebied</InputLabel>
+        <Select
+          labelId="layer3-label"
+          value={layer3}
+          label="Layer 3"
+          onChange={(e) => setLayer3(e.target.value)}
+        >
+          <MenuItem value="1">Option 1</MenuItem>
+          <MenuItem value="2">Option 2</MenuItem>
+        </Select>
+      </FormControl>
+    </Paper>
   );
 }

@@ -1,8 +1,6 @@
-import React from 'react';
 import { Box, Button, SvgIcon } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { Opacity } from '@mui/icons-material';
 
 const NetherlandsIcon = (props: any) => (
   <SvgIcon sx={{ fontSize: 50 }} viewBox="0 50 230 160" {...props}>
@@ -20,13 +18,19 @@ const LimburgIcon = (props: any) => (
 );
 
 const buttonStyle = {
-  backgroundColor: 'white',
-  color: '#5b6260ff',
-  width: 45,
-  height: 45,
-  minWidth: 45,
+  backgroundColor: '#ffffffd8',
+  color: '#4a4a4ad3',
+  width: 40,
+  height: 40,
+  minWidth: 40,
   borderRadius: 1,
-  border: '1px solid #ccc',
+  padding: 0,
+  stroke:'#4a4a4ad3',
+  strokeWidth:1,
+  border: '1px',
+  '&:focus': {
+    outline: 'none'
+  }
 };
 
 export default function MapControlButtons() {
@@ -34,15 +38,15 @@ export default function MapControlButtons() {
     <Box
       sx={{
         position: 'absolute',
-        top: 100,
-        right: 16,
+        top: 5,
+        right: 5,
         display: 'flex',
         flexDirection: 'column',
         gap: 1,
         zIndex: 1000,
       }}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         <Button sx={buttonStyle}>
           <AddIcon />
         </Button>
@@ -51,7 +55,7 @@ export default function MapControlButtons() {
         </Button>
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         <Button sx={buttonStyle}>
           <NetherlandsIcon />
         </Button>
