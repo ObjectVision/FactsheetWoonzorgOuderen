@@ -39,7 +39,16 @@ const MUI_X_PRODUCTS: TreeViewBaseItem[] = [
   },
 ];
 
-export default function LayerTreeView() {
+interface Props {
+  showLayerControl: boolean;
+  setShowLayerControl: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function LayerTreeView({showLayerControl, setShowLayerControl}:Props) {
+  if (showLayerControl == false) {
+    return;
+  }
+
   return (
     <Box sx={{ minHeight: 352, 
                minWidth: 250, 
@@ -55,3 +64,5 @@ export default function LayerTreeView() {
     </Box>
   );
 }
+
+export default LayerTreeView;

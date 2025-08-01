@@ -17,7 +17,12 @@ const buttonStyle = {
   }
 };
 
-export default function TreeviewControl() {
+interface Props {
+  showLayerControl: boolean;
+  setShowLayerControl: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export default function TreeviewControl({showLayerControl, setShowLayerControl}:Props) {
   return (
     <Box
       sx={{
@@ -31,8 +36,8 @@ export default function TreeviewControl() {
       }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-        <Button sx={buttonStyle}>
-          <LayersIcon/>
+        <Button sx={buttonStyle} onClick={() => setShowLayerControl(!showLayerControl)}>
+          <LayersIcon />
         </Button>
       </Box>
     </Box>

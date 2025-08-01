@@ -14,6 +14,7 @@ import LayerTreeView from './LayerControl.tsx'
 function App() {
   const [currentNeighborhood, setCurrentNeighborhood] = useState<string>("Test wijk");
   const [selectedPolygons, setSelectedPolygons] = useState<GeoJSON.Feature[]>([]);
+  const [showLayerControl, setshowLayerControl] = useState<boolean>(false);
 
   useEffect(() => {
     console.log(currentNeighborhood);
@@ -30,8 +31,8 @@ function App() {
     <div>
       <div id="details-area">
         <TitleBox/>
-        <LayerTreeView/>
-        <TreeviewControl/>
+        <LayerTreeView showLayerControl={showLayerControl} setShowLayerControl={setshowLayerControl}/>
+        <TreeviewControl showLayerControl={showLayerControl} setShowLayerControl={setshowLayerControl}/>
         <Controls/>
         <FeatureCards selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons} />
       </div>
