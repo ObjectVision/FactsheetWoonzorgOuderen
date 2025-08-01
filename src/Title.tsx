@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material';
 import AssistWalkerIcon from '@mui/icons-material/AssistWalker';
 import AccessibleForwardIcon from '@mui/icons-material/AccessibleForward';
 
-const TitleBox: React.FC<{ title?: string }> = ({ title = 'Gereedschapskist Wonen & Zorg Limburg' }) => {
+const TitleBox: React.FC<{ title?: string }> = ({ title = 'Wonen & Zorg Limburg' }) => {
   return (
 <Box
   sx={{
@@ -28,7 +28,7 @@ const TitleBox: React.FC<{ title?: string }> = ({ title = 'Gereedschapskist Wone
   }}
 >
       <AssistWalkerIcon/>
-      <Typography variant="subtitle2" sx={{ fontSize: 30, textAlign: 'center' }}>
+      <Typography variant="h1" sx={{ fontSize: 30, fontWeight:'550', textAlign: 'center' }}>
         {title}
       </Typography>
       <AccessibleForwardIcon/>
