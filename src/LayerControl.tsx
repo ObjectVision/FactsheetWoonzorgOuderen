@@ -47,7 +47,7 @@ export default function LayerTreeView() {
                backgroundColor: '#ffffffd8',   
                color: '#4a4a4ad3', 
                left:5, 
-               top: 50, 
+               top: 95, 
                position:'absolute',
                borderRadius: 1,
                padding: 0 }}>

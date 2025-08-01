@@ -45,8 +45,6 @@ interface ChildProps {
 
 function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   const [isHovering, setIsHovering] = useState(false);
-  //const [selectedPolygons, setSelectedPolygons] = useState<GeoJSON.Feature[]>([]);
-
   const background_layer = new TileLayer<ImageBitmap>({
             data: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
             id: 'background_layer',

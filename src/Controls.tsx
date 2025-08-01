@@ -38,7 +38,7 @@ export default function MapControlButtons() {
     <Box
       sx={{
         position: 'absolute',
-        top: 5,
+        top: 50,
         right: 5,
         display: 'flex',
         flexDirection: 'column',
