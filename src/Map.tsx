@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import wijken from "./assets/cbs_wijken_limburg.json?url";
-import bag_panden from "./assets/bag_pand_Limburg_uncompressed.arrow?url";
+import bag_panden from "./assets/bag_pand_Limburg_uncompressed_3.arrow?url";
+//import bag_panden from "./assets/bag_pand_NL_uncompressed.arrow?url";
+
 import {DeckGL} from '@deck.gl/react';
 import type {PickingInfo} from '@deck.gl/core';
 import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers';
@@ -139,16 +141,16 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
 
     const arrow_layer =  new GeoArrowPolygonLayer({
         id: "geoarrow-polygons",
-        stroked: true,
+        stroked: false,
         filled: true,
         data: table!,
-        getFillColor: [0, 100, 60, 160],
+        getFillColor: [255, 0, 0, 255],
         getLineColor: [0, 0, 0],
-        lineWidthMinPixels: 0.5,
+        lineWidthMinPixels: 1,
         extruded: false,
         wireframe: false,
         // getElevation: 0,
-        pickable: true,
+        pickable: false,
         positionFormat: "XY",
         _normalize: false,
         autoHighlight: false,

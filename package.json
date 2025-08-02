@@ -12,6 +12,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@geoarrow/deck.gl-layers": "^0.3.1",
     "@loaders.gl/core": "^4.3.4",
     "@loaders.gl/flatgeobuf": "^4.3.4",
     "@mui/icons-material": "^7.2.0",
@@ -19,6 +20,7 @@
     "@mui/styled-engine": "^7.2.0",
     "@mui/styled-engine-sc": "^7.2.0",
     "@mui/x-tree-view": "^8.9.2",
+    "apache-arrow": "^21.0.0",
     "d3": "^7.9.0",
     "deck.gl": "^9.1.13",
     "react": "^19.1.0",
