@@ -9,6 +9,7 @@ import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers';
 import {TileLayer} from '@deck.gl/geo-layers';
 import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
 import * as arrow from "apache-arrow";
+import { RecordBatchReader, Table } from 'apache-arrow';
 
 const INITIAL_VIEW_STATE:any = {
   longitude: 5.844702066665236,
@@ -57,15 +58,28 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
       const data = await fetch(bag_panden);
       const buffer = await data.arrayBuffer();
       const table = arrow.tableFromIPC(buffer);
-      const table2 = new arrow.Table(table.batches.slice(0, 10));
-      //window.table = table2;
-      setTable(table2);
+      setTable(table);
     };
 
     if (!table) {
       fetchData().catch(console.error);
     }
   });
+  
+
+  /*useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch(bag_panden);
+      const buffer = await res.arrayBuffer();
+      const reader = await RecordBatchReader.from(buffer);
+      const table = await reader.readAll(); // reads all batches
+      setTable(table);
+    };
+
+    if (!table) {
+      fetchData().catch(console.error);
+    }
+  }, [bag_panden, table]);*/
 
 
   const background_layer = new TileLayer<ImageBitmap>({
@@ -118,7 +132,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
               depthTest: false
             },
             getLineColor: [256, 256, 256, 100],
-            getFillColor: [72, 191, 145, 256],
+            getFillColor: [72, 191, 145, 100],
             getLineWidth: 5,
             getPointRadius: 4,
             getTextSize: 12,
@@ -141,12 +155,12 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
 
     const arrow_layer =  new GeoArrowPolygonLayer({
         id: "geoarrow-polygons",
-        stroked: false,
+        stroked: true,
         filled: true,
         data: table!,
         getFillColor: [255, 0, 0, 255],
         getLineColor: [0, 0, 0],
-        lineWidthMinPixels: 1,
+        lineWidthMinPixels: 0.001,
         extruded: false,
         wireframe: false,
         // getElevation: 0,
