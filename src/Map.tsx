@@ -1,20 +1,10 @@
 import { useEffect, useState } from "react";
 import wijken from "./assets/cbs_wijken_limburg.json?url";
-//import wijken_fgb from "./assets/cbs_wijken_limburg.fgb?url";
+//import bag_panden from "./assets/bag_panden_Limburg.arrow?url";
 import {DeckGL} from '@deck.gl/react';
 import type {PickingInfo} from '@deck.gl/core';
-import {BitmapLayer, GeoJsonLayer, PolygonLayer} from '@deck.gl/layers';
+import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers';
 import {TileLayer} from '@deck.gl/geo-layers';
-//import {FlatGeobufLoader} from '@loaders.gl/flatgeobuf';
-import {MVTLayer} from '@deck.gl/geo-layers';
-import type {Feature, Geometry} from 'geojson';
-
-type PropertiesType = {
-  name?: string;
-  rank: number;
-  layerName: string;
-  class: string;
-};
 
 const INITIAL_VIEW_STATE:any = {
   longitude: 5.844702066665236,
