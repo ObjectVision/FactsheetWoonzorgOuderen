@@ -15,12 +15,9 @@ import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
 import * as arrow from "apache-arrow";
 import CogBitmapLayer from '@gisatcz/deckgl-geolib/src/cogbitmaplayer/CogBitmapLayer';
 import { GeoTIFFLoader } from '@loaders.gl/geotiff';
-import { registerLoaders } from '@loaders.gl/core';
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
-// Register the GeoTIFF loader
-registerLoaders([GeoTIFFLoader]);
 
 const INITIAL_VIEW_STATE:any = {
   longitude: 5.844702066665236,
@@ -76,15 +73,19 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
       fetchData().catch(console.error);
     }
   });*/
-  
-  let map : maplibregl.Map;
 
   useEffect(() => {
     if (!mapReady) return;
 
     const map = new maplibregl.Map({
       container: "central-map",
-      style: 'https://demotiles.maplibre.org/style.json', // Open source tiles
+      //style: 'https://demotiles.maplibre.org/style.json', // Open source tiles
+      style: {
+        version: 8,
+        sources: {},
+        layers: [],
+      },
+      hash: true,
       center: [5.836128219877641, 51.02386112443766],
       zoom: 10
     });
