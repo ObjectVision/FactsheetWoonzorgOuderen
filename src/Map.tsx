@@ -8,6 +8,7 @@ import loopafstand from "./assets/grid/loopafstand_huisarts_cog_gdal.tif?url";
 import test_cog from "./assets/grid/GHS_POP_E2015_COGeoN.tif?url";
 
 import {DeckGL} from '@deck.gl/react';
+import {MapboxOverlay} from '@deck.gl/mapbox';
 import type {PickingInfo} from '@deck.gl/core';
 import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers';
 import {TileLayer} from '@deck.gl/geo-layers';
@@ -74,10 +75,13 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     }
   });*/
 
+  let map:maplibregl.Map|undefined;
+  let deck: MapboxOverlay;
+
   useEffect(() => {
     if (!mapReady) return;
 
-    const map = new maplibregl.Map({
+    map = new maplibregl.Map({
       container: "central-map",
       //style: 'https://demotiles.maplibre.org/style.json', // Open source tiles
       style: {
@@ -92,12 +96,12 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
 
     map.on("load", () => {
 
-      map.addSource("limburg", {
+      map!.addSource("limburg", {
         type: "geojson",
         data: wijken,
       });
 
-      map.addLayer({
+      map!.addLayer({
         id: "limburg",
         source: "limburg",
         type: "fill",
@@ -105,6 +109,15 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
           "fill-color": "#ff0000ff",
         },
       });
+
+      deck = new MapboxOverlay({
+        interleaved: true,
+        layers: [
+        ]
+      });
+
+      map!.addControl(deck);
+
     });
 
     map.on("click", (e) => {
