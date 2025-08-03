@@ -18,6 +18,7 @@ import CogBitmapLayer from '@gisatcz/deckgl-geolib/src/cogbitmaplayer/CogBitmapL
 import { GeoTIFFLoader } from '@loaders.gl/geotiff';
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import {Map as ReactMap, useControl} from 'react-map-gl/maplibre';
 
 
 const INITIAL_VIEW_STATE:any = {
@@ -58,7 +59,6 @@ interface ChildProps {
 }
 
 function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
-  const [isHovering, setIsHovering] = useState(false);
   const [table, setTable] = useState<arrow.Table | null>(null);
   const [mapReady, setMapReady] = useState(false);
   /*useEffect(() => {
@@ -75,8 +75,80 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     }
   });*/
 
-  let map:maplibregl.Map|undefined;
+  let map:maplibregl.Map;
   let deck: MapboxOverlay;
+
+  let background_layer = new TileLayer<ImageBitmap>({
+    data: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+    id: 'background_layer',
+    maxRequests: 20,
+    pickable: false,
+    autoHighlight: false,
+    highlightColor: [60, 60, 60, 40],
+    minZoom: 0,
+    maxZoom: 19,
+    tileSize: 256,
+    zoomOffset: -0.9,
+    
+    renderSubLayers: props => {
+      const [[west, south], [east, north]] = props.tile.boundingBox;
+      const {data, ...otherProps} = props;
+
+      return [
+        new BitmapLayer(otherProps, {
+          image: data,
+          bounds: [west, south, east, north]
+        })
+      ];
+    }
+  });
+
+
+  let navigation_layer = new GeoJsonLayer({
+            id: 'navigation-layer', 
+            data: wijken,
+            opacity: 1.0,
+            stroked: true,
+            filled: true,
+            onClick: ({object}: any) => {
+              if (!object) return;
+
+              setSelectedPolygons(prev => {
+                const maxFeatures = 3;
+                const index = prev.findIndex((f) => f.properties!.WK_CODE === object.properties.WK_CODE);
+                if (index!==-1)
+                  return prev.filter((_, i) => i !== index);
+
+                const updated = [...prev, object];
+                return updated.slice(-maxFeatures);
+              });
+            },
+            parameters: {
+              depthTest: false,
+              depthRange: [0, 1]
+            },
+            
+            getLineColor: [256, 256, 256, 100],
+            getFillColor: [72, 191, 145, 100],
+            getLineWidth: 5,
+            getPointRadius: 4,
+            getTextSize: 12,
+            lineWidthMinPixels: 1,
+            pickable: true,
+        })
+
+    const selection_layer = new GeoJsonLayer({
+    id: 'selection-layer',
+    data: {
+      type: 'FeatureCollection',
+      features: selectedPolygons,
+    },
+    filled: false,
+    stroked: true,
+    getLineWidth: 42,
+    lineWidthMinPixels: 1,
+    getLineColor: [200, 0, 0, 200],
+  });
 
   useEffect(() => {
     if (!mapReady) return;
@@ -94,9 +166,14 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
       zoom: 10
     });
 
+    //map.dragRotate.disable();
+    //map.touchZoomRotate.disableRotation();
+    map.setMaxPitch(0);
+    map.touchPitch.disable();
+
     map.on("load", () => {
 
-      map!.addSource("limburg", {
+      /*map!.addSource("limburg", {
         type: "geojson",
         data: wijken,
       });
@@ -108,12 +185,20 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
         paint: {
           "fill-color": "#ff0000ff",
         },
-      });
+      });*/
+
 
       deck = new MapboxOverlay({
         interleaved: true,
         layers: [
-        ]
+          background_layer,
+          navigation_layer
+          //selection_layer
+        ],
+        parameters: {
+          depthWriteEnabled: false
+        }
+        
       });
 
       map!.addControl(deck);
@@ -140,76 +225,11 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   }, [bag_panden, table]);*/
 
 
-  const background_layer = new TileLayer<ImageBitmap>({
-            data: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-            id: 'background_layer',
-            maxRequests: 20,
-            pickable: false,
-            autoHighlight: false,
-            highlightColor: [60, 60, 60, 40],
-            minZoom: 0,
-            maxZoom: 19,
-            tileSize: 256,
-            zoomOffset: -0.9,
-            renderSubLayers: props => {
-              const [[west, south], [east, north]] = props.tile.boundingBox;
-              const {data, ...otherProps} = props;
 
-              return [
-                new BitmapLayer(otherProps, {
-                  image: data,
-                  bounds: [west, south, east, north]
-                })
-              ];
-            }
-          });
 
-  const navigation_layer = new GeoJsonLayer({
-            id: 'navigation-layer', 
-            data: wijken,
-            opacity: 1.0,
-            stroked: true,
-            filled: true,
-            onHover: ({object}) => {
-              setIsHovering(Boolean(object));
-            },
-            onClick: ({object}: any) => {
-              if (!object) return;
 
-              setSelectedPolygons(prev => {
-                const maxFeatures = 3;
-                const index = prev.findIndex((f) => f.properties!.WK_CODE === object.properties.WK_CODE);
-                if (index!==-1)
-                  return prev.filter((_, i) => i !== index);
 
-                const updated = [...prev, object];
-                return updated.slice(-maxFeatures);
-              });
-            },
-            parameters: {
-              depthTest: false
-            },
-            getLineColor: [256, 256, 256, 100],
-            getFillColor: [72, 191, 145, 100],
-            getLineWidth: 5,
-            getPointRadius: 4,
-            getTextSize: 12,
-            lineWidthMinPixels: 1,
-            pickable: true,
-        })
 
-  const selection_layer = new GeoJsonLayer({
-    id: 'selection-layer',
-    data: {
-      type: 'FeatureCollection',
-      features: selectedPolygons,
-    },
-    filled: false,
-    stroked: true,
-    getLineWidth: 42,
-    lineWidthMinPixels: 1,
-    getLineColor: [200, 0, 0, 200],
-});
 
     const arrow_layer =  new GeoArrowPolygonLayer({
         id: "geoarrow-polygons",
@@ -232,41 +252,13 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
         ),
       });
 
-  const cogLayerDefinition = {
-    id: 'CogBitmapLayer',
-    rasterData: loopafstand,//'https://gisat-gis.eu-central-1.linodeobjects.com/esaUtepUnHabitat/rasters/global/GHS-POP/GHS_POP_E2015_COGeoN.tif',
-    cogBitmapOptions: {
-      type: 'image',
-      blurredTexture: false,
-      clipLow: 1,
-      useChannel: 0,
-      useSingleColor: true,
-    },
 
-    isTiled: true,
-  };
-
-  const cogLayerDefinition1 = {
-    id: 'CogBitmapLayer',
-    rasterData: loopafstand,
-    cogBitmapOptions: {
-      type: 'image',
-      useAutoRange: true,
-      useChannel: 1
-    },
-
-    isTiled: true,
-  };
-
-  const cog_layer = new CogBitmapLayer({cogLayerDefinition});
-
-  const layers = [
+  /*const layers = [
           background_layer,
           navigation_layer,
           selection_layer,
-          arrow_layer,
-          cog_layer
-        ];
+          arrow_layer
+        ];*/
 
 
   return <div ref={() => setMapReady(true)} id="central-map" />;
