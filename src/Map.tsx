@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import wijken from "./assets/cbs_wijken_limburg.json?url";
 import bag_panden from "./assets/bag_pand_Limburg_uncompressed_3.arrow?url";
 //import bag_panden from "./assets/bag_pand_NL_uncompressed.arrow?url";
+//import loopafstand from "./assets/grid/loopafstand_huisarts_cog.tif?url";
+import loopafstand from "./assets/grid/loopafstand_huisarts_cog_gdal.tif?url";
+
+import test_cog from "./assets/grid/GHS_POP_E2015_COGeoN.tif?url";
 
 import {DeckGL} from '@deck.gl/react';
 import type {PickingInfo} from '@deck.gl/core';
@@ -9,7 +13,14 @@ import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers';
 import {TileLayer} from '@deck.gl/geo-layers';
 import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
 import * as arrow from "apache-arrow";
-import { RecordBatchReader, Table } from 'apache-arrow';
+import CogBitmapLayer from '@gisatcz/deckgl-geolib/src/cogbitmaplayer/CogBitmapLayer';
+import { GeoTIFFLoader } from '@loaders.gl/geotiff';
+import { registerLoaders } from '@loaders.gl/core';
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
+
+// Register the GeoTIFF loader
+registerLoaders([GeoTIFFLoader]);
 
 const INITIAL_VIEW_STATE:any = {
   longitude: 5.844702066665236,
@@ -51,8 +62,8 @@ interface ChildProps {
 function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   const [isHovering, setIsHovering] = useState(false);
   const [table, setTable] = useState<arrow.Table | null>(null);
-  
-  useEffect(() => {
+  const [mapReady, setMapReady] = useState(false);
+  /*useEffect(() => {
     // declare the data fetching function
     const fetchData = async () => {
       const data = await fetch(bag_panden);
@@ -64,8 +75,41 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     if (!table) {
       fetchData().catch(console.error);
     }
-  });
+  });*/
   
+  let map : maplibregl.Map;
+
+  useEffect(() => {
+    if (!mapReady) return;
+
+    const map = new maplibregl.Map({
+      container: "central-map",
+      style: 'https://demotiles.maplibre.org/style.json', // Open source tiles
+      center: [5.836128219877641, 51.02386112443766],
+      zoom: 10
+    });
+
+    map.on("load", () => {
+
+      map.addSource("limburg", {
+        type: "geojson",
+        data: wijken,
+      });
+
+      map.addLayer({
+        id: "limburg",
+        source: "limburg",
+        type: "fill",
+        paint: {
+          "fill-color": "#ff0000ff",
+        },
+      });
+    });
+
+    map.on("click", (e) => {
+      console.log(e);
+    });
+  });
 
   /*useEffect(() => {
     const fetchData = async () => {
@@ -155,7 +199,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
 
     const arrow_layer =  new GeoArrowPolygonLayer({
         id: "geoarrow-polygons",
-        stroked: true,
+        stroked: false,
         filled: true,
         data: table!,
         getFillColor: [255, 0, 0, 255],
@@ -174,21 +218,53 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
         ),
       });
 
+  const cogLayerDefinition = {
+    id: 'CogBitmapLayer',
+    rasterData: loopafstand,//'https://gisat-gis.eu-central-1.linodeobjects.com/esaUtepUnHabitat/rasters/global/GHS-POP/GHS_POP_E2015_COGeoN.tif',
+    cogBitmapOptions: {
+      type: 'image',
+      blurredTexture: false,
+      clipLow: 1,
+      useChannel: 0,
+      useSingleColor: true,
+    },
+
+    isTiled: true,
+  };
+
+  const cogLayerDefinition1 = {
+    id: 'CogBitmapLayer',
+    rasterData: loopafstand,
+    cogBitmapOptions: {
+      type: 'image',
+      useAutoRange: true,
+      useChannel: 1
+    },
+
+    isTiled: true,
+  };
+
+  const cog_layer = new CogBitmapLayer({cogLayerDefinition});
+
   const layers = [
           background_layer,
           navigation_layer,
           selection_layer,
-          arrow_layer
+          arrow_layer,
+          cog_layer
         ];
 
-  return <DeckGL
+
+  return <div ref={() => setMapReady(true)} id="central-map" />;
+
+  /*return <DeckGL
       initialViewState={INITIAL_VIEW_STATE}
       controller
       layers={layers}
       getCursor={({ isDragging }) =>
         isDragging ? 'grabbing' : isHovering ? 'pointer' : 'default'
       }
-      getTooltip={getTooltip} />;
+      getTooltip={getTooltip} />;*/
 }
 
 export default Map;

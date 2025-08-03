@@ -13,8 +13,10 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@geoarrow/deck.gl-layers": "^0.3.1",
+    "@gisatcz/deckgl-geolib": "^1.11.2",
     "@loaders.gl/core": "^4.3.4",
     "@loaders.gl/flatgeobuf": "^4.3.4",
+    "@loaders.gl/geotiff": "^4.3.4",
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
     "@mui/styled-engine": "^7.2.0",
@@ -23,6 +25,7 @@
     "apache-arrow": "^21.0.0",
     "d3": "^7.9.0",
     "deck.gl": "^9.1.13",
+    "maplibre-gl": "^5.6.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
