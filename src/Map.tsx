@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import wijken from "./assets/cbs_wijken_limburg.json?url";
-//import bag_panden from "./assets/bag_pand_Limburg_uncompressed_3.arrow?url";
+import bag_panden from "./assets/bag_pand_Limburg_uncompressed_3.arrow?url";
 //import bag_panden from "./assets/bag_pand_NL_uncompressed.arrow?url";
-//import loopafstand from "./assets/grid/loopafstand_huisarts_cog.tif?url";
+import loopafstand from "./assets/grid/loopafstand_huisarts_cog.tif?url";
 //import loopafstand from "./assets/grid/loopafstand_huisarts_cog_gdal.tif?url";
 
 //import test_cog from "./assets/grid/GHS_POP_E2015_COGeoN.tif?url";
@@ -16,17 +16,18 @@ import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
 import * as arrow from "apache-arrow";
 //import CogBitmapLayer from '@gisatcz/deckgl-geolib/src/cogbitmaplayer/CogBitmapLayer';
 //import { GeoTIFFLoader } from '@loaders.gl/geotiff';
-//import maplibregl from "maplibre-gl";
+import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type {DeckProps} from '@deck.gl/core';
-import {Map as ReactMap, useControl} from 'react-map-gl/maplibre';
+import {Map as ReactMap, useControl, Source, Layer} from 'react-map-gl/maplibre';
+import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
 
 function DeckGLOverlay(props: DeckProps) {
   const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
   overlay.setProps(props);
   return null;
 }
-
+maplibregl.addProtocol('cog', cogProtocol);
 /*const INITIAL_VIEW_STATE:any = {
   longitude: 5.844702066665236,
   zoom: 10,
@@ -67,7 +68,7 @@ interface ChildProps {
 function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   const [table, setTable] = useState<arrow.Table | null>(null);
   const [mapReady, setMapReady] = useState(false);
-  /*useEffect(() => {
+  useEffect(() => {
     // declare the data fetching function
     const fetchData = async () => {
       const data = await fetch(bag_panden);
@@ -79,7 +80,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     if (!table) {
       fetchData().catch(console.error);
     }
-  });*/
+  });
 
   //let map:maplibregl.Map;
   //let deck: MapboxOverlay;
@@ -244,23 +245,38 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
 
 
   let layers = [
-          background_layer,
-          navigation_layer,
-          selection_layer
+          //background_layer,
+          //navigation_layer,
+          selection_layer,
           //arrow_layer
         ];
 
 
   //return <div ref={() => setMapReady(true)} id="central-map" />;
 
+
+
     return (<ReactMap
       initialViewState={{
-        longitude: 0.45,
-        latitude: 51.47,
-        zoom: 11
+        longitude: 11.39831,//5.844702066665236,
+        latitude: 47.26244,//50.91319982389477,
+        zoom: 14
       }}
+      
       mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
     >
+      <Source
+          id="cogSource"
+          type="raster"
+          url="cog://https://maplibre.org/maplibre-gl-js/docs/assets/cog.tif"
+        ></Source>
+
+        <Layer
+          id="cogLayer"
+          source= "cogSource"
+          type="raster"
+        >
+        </Layer>
       <DeckGLOverlay layers={layers} />
     </ReactMap>);
 
