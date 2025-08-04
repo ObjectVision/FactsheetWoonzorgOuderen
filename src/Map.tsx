@@ -1,35 +1,41 @@
 import { useEffect, useState } from "react";
 import wijken from "./assets/cbs_wijken_limburg.json?url";
-import bag_panden from "./assets/bag_pand_Limburg_uncompressed_3.arrow?url";
+//import bag_panden from "./assets/bag_pand_Limburg_uncompressed_3.arrow?url";
 //import bag_panden from "./assets/bag_pand_NL_uncompressed.arrow?url";
 //import loopafstand from "./assets/grid/loopafstand_huisarts_cog.tif?url";
-import loopafstand from "./assets/grid/loopafstand_huisarts_cog_gdal.tif?url";
+//import loopafstand from "./assets/grid/loopafstand_huisarts_cog_gdal.tif?url";
 
-import test_cog from "./assets/grid/GHS_POP_E2015_COGeoN.tif?url";
+//import test_cog from "./assets/grid/GHS_POP_E2015_COGeoN.tif?url";
 
-import {DeckGL} from '@deck.gl/react';
+//import {DeckGL} from '@deck.gl/react';
 import {MapboxOverlay} from '@deck.gl/mapbox';
 import type {PickingInfo} from '@deck.gl/core';
 import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers';
 import {TileLayer} from '@deck.gl/geo-layers';
 import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
 import * as arrow from "apache-arrow";
-import CogBitmapLayer from '@gisatcz/deckgl-geolib/src/cogbitmaplayer/CogBitmapLayer';
-import { GeoTIFFLoader } from '@loaders.gl/geotiff';
-import maplibregl from "maplibre-gl";
+//import CogBitmapLayer from '@gisatcz/deckgl-geolib/src/cogbitmaplayer/CogBitmapLayer';
+//import { GeoTIFFLoader } from '@loaders.gl/geotiff';
+//import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import type {DeckProps} from '@deck.gl/core';
 import {Map as ReactMap, useControl} from 'react-map-gl/maplibre';
 
+function DeckGLOverlay(props: DeckProps) {
+  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
+  overlay.setProps(props);
+  return null;
+}
 
-const INITIAL_VIEW_STATE:any = {
+/*const INITIAL_VIEW_STATE:any = {
   longitude: 5.844702066665236,
   zoom: 10,
   latitude: 50.91319982389477,
   pitch: 0,
   bearing: 0
-};
+};*/
 
-function getTooltip({object}: PickingInfo) {
+/*function getTooltip({object}: PickingInfo) {
   if (object == undefined)
     return null;
   return null;
@@ -42,7 +48,7 @@ function getTooltip({object}: PickingInfo) {
       fontSize: '0.8em'
     }
   };
-}
+}*/
 
 /////////////////
 
@@ -75,10 +81,10 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     }
   });*/
 
-  let map:maplibregl.Map;
-  let deck: MapboxOverlay;
+  //let map:maplibregl.Map;
+  //let deck: MapboxOverlay;
 
-  let background_layer = new TileLayer<ImageBitmap>({
+  const background_layer = new TileLayer<ImageBitmap>({
     data: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
     id: 'background_layer',
     maxRequests: 20,
@@ -104,7 +110,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   });
 
 
-  let navigation_layer = new GeoJsonLayer({
+  const navigation_layer = new GeoJsonLayer({
             id: 'navigation-layer', 
             data: wijken,
             opacity: 1.0,
@@ -150,7 +156,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     getLineColor: [200, 0, 0, 200],
   });
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (!mapReady) return;
 
     map = new maplibregl.Map({
@@ -166,26 +172,10 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
       zoom: 10
     });
 
-    //map.dragRotate.disable();
-    //map.touchZoomRotate.disableRotation();
     map.setMaxPitch(0);
     map.touchPitch.disable();
 
     map.on("load", () => {
-
-      /*map!.addSource("limburg", {
-        type: "geojson",
-        data: wijken,
-      });
-
-      map!.addLayer({
-        id: "limburg",
-        source: "limburg",
-        type: "fill",
-        paint: {
-          "fill-color": "#ff0000ff",
-        },
-      });*/
 
 
       deck = new MapboxOverlay({
@@ -208,7 +198,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     map.on("click", (e) => {
       console.log(e);
     });
-  });
+  });*/
 
   /*useEffect(() => {
     const fetchData = async () => {
@@ -253,15 +243,26 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
       });
 
 
-  /*const layers = [
+  let layers = [
           background_layer,
           navigation_layer,
-          selection_layer,
-          arrow_layer
-        ];*/
+          selection_layer
+          //arrow_layer
+        ];
 
 
-  return <div ref={() => setMapReady(true)} id="central-map" />;
+  //return <div ref={() => setMapReady(true)} id="central-map" />;
+
+    return (<ReactMap
+      initialViewState={{
+        longitude: 0.45,
+        latitude: 51.47,
+        zoom: 11
+      }}
+      mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+    >
+      <DeckGLOverlay layers={layers} />
+    </ReactMap>);
 
   /*return <DeckGL
       initialViewState={INITIAL_VIEW_STATE}
