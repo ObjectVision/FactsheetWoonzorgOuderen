@@ -84,7 +84,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
 
   //let map:maplibregl.Map;
   //let deck: MapboxOverlay;
-
+  const loopafstand_cog_url = `cog://${loopafstand}`;
   const background_layer = new TileLayer<ImageBitmap>({
     data: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
     id: 'background_layer',
@@ -246,7 +246,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
 
   let layers = [
           //background_layer,
-          //navigation_layer,
+          navigation_layer,
           selection_layer,
           //arrow_layer
         ];
@@ -258,9 +258,9 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
 
     return (<ReactMap
       initialViewState={{
-        longitude: 11.39831,//5.844702066665236,
-        latitude: 47.26244,//50.91319982389477,
-        zoom: 14
+        longitude: 5.844702066665236,
+        latitude: 50.91319982389477,
+        zoom: 10
       }}
       
       mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
@@ -268,7 +268,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
       <Source
           id="cogSource"
           type="raster"
-          url="cog://https://maplibre.org/maplibre-gl-js/docs/assets/cog.tif"
+          url={loopafstand_cog_url}//"cog://https://maplibre.org/maplibre-gl-js/docs/assets/cog.tif"
         ></Source>
 
         <Layer
