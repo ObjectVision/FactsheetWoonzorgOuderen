@@ -248,7 +248,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
           //background_layer,
           navigation_layer,
           selection_layer,
-          //arrow_layer
+          arrow_layer
         ];
 
 
@@ -263,7 +263,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
         zoom: 10
       }}
       
-      mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+      mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"//"https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
     >
       <Source
           id="cogSource"
