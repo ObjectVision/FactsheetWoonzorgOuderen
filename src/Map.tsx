@@ -19,7 +19,7 @@ import * as arrow from "apache-arrow";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type {DeckProps} from '@deck.gl/core';
-import {Map as ReactMap, useControl, Source, Layer} from '@vis.gl/react-maplibre';
+import {Map as ReactMap, useControl, Source, Layer} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
 
 function DeckGLOverlay(props: DeckProps) {
