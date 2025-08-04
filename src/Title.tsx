@@ -9,7 +9,7 @@ const TitleBox: React.FC<{ title?: string }> = ({ title = 'Wonen & Zorg Limburg'
   sx={{
     position: 'fixed',
     top: 5,
-    left: 5,
+    left: 500,
     right: 5,
     display: 'flex',
     alignItems: 'center',

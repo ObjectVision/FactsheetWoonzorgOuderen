@@ -39,7 +39,7 @@ interface ChildProps {
 function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   const [table, setTable] = useState<arrow.Table | null>(null);
   const [mapReady, setMapReady] = useState(false);
-  const [deckLayers, setDeckLayers] = useState<LayersList>([]);
+  const [deckLayers, setDeckLayers] = useState<any>([]);
   const mapRef = useRef<MapRef>(null);
   const overlayRef = useRef<MapboxOverlay | null>(null);
 
@@ -58,6 +58,8 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
       fetchData().catch(console.error);
     }
   }, [table]); // Add dependency array to prevent infinite re-renders
+
+
 
   // Create navigation layer (base layer)
   const createNavigationLayer = useCallback(() => {
@@ -93,6 +95,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
       pickable: true,
     });
   }, [setSelectedPolygons]);
+
 
   // Create selection layer (overlay layer)
   const createSelectionLayer = useCallback(() => {
@@ -154,15 +157,16 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     const selectionLayer = createSelectionLayer();
 
     // Create deck overlay
+    
     deck = new MapboxOverlay({ 
-      layers: [navigationLayer, selectionLayer],
+      layers: [selectionLayer],
       // Optional: specify layer order more explicitly
 
     });
     
     map.addControl(deck);
     overlayRef.current = deck;
-    setDeckLayers([navigationLayer, selectionLayer]);
+    setDeckLayers([navigationLayer, selectionLayer]); 
     setMapReady(true);
 
   }, [createNavigationLayer, createSelectionLayer]);
@@ -170,17 +174,23 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   // Function to dynamically add/remove layers
   const addLayer = useCallback((layer: any) => {
     if (overlayRef.current) {
-      const currentLayers :any= [];//overlayRef.current.props.layers || [];
+      
       overlayRef.current.setProps({
-        layers: [...currentLayers, layer]
+        layers: [...deckLayers, layer]
       });
     }
   }, []);
 
+  function addNavLayer(){
+    const nvlr = createNavigationLayer();
+    addLayer(nvlr);
+    return;
+  };
+
+
   const removeLayer = useCallback((layerId: string) => {
     if (overlayRef.current) {
-      const currentLayers:any = [];//overlayRef.current.props.layers || [];
-      const filteredLayers = currentLayers.filter((layer: any) => layer.id !== layerId);
+      const filteredLayers = deckLayers.filter((layer: any) => layer.id !== layerId);
       overlayRef.current.setProps({
         layers: filteredLayers
       });
@@ -190,8 +200,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   // Function to update a specific layer
   const updateLayer = useCallback((layerId: string, newProps: any) => {
     if (overlayRef.current) {
-      const currentLayers:any = [];//overlayRef.currentprops.layers || [];
-      const updatedLayers = currentLayers.map((layer: any) => 
+      const updatedLayers = deckLayers.map((layer: any) => 
         layer.id === layerId ? layer.clone(newProps) : layer
       );
       overlayRef.current.setProps({
@@ -201,18 +210,22 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   }, []);
 
   return (
-    <ReactMapGl
-      ref={mapRef}
-      initialViewState={{
-        longitude: 5.844702066665236,
-        latitude: 50.91319982389477,
-        zoom: 10
-      }}
-      mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
-      onLoad={onMapLoad}
-    >
-      {/* You can add additional controls or components here */}
-    </ReactMapGl>
+      <div id ="central-map">
+        <button onClick={addNavLayer}>add layer</button>
+      <ReactMapGl
+        ref={mapRef}
+        initialViewState={{
+          longitude: 5.844702066665236,
+          latitude: 50.91319982389477,
+          zoom: 10
+        }}
+        mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+        onLoad={onMapLoad}
+      >
+        {/* You can add additional controls or components here */}
+      </ReactMapGl>
+      </div>
+
   );
 }
 
