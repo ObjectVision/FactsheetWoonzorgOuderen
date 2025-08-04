@@ -20,6 +20,7 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type {DeckProps} from '@deck.gl/core';
 import {Map as ReactMap, useControl, Source, Layer} from 'react-map-gl/maplibre';
+import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
 
 function DeckGLOverlay(props: DeckProps) {
@@ -37,9 +38,10 @@ interface ChildProps {
 function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   const [table, setTable] = useState<arrow.Table | null>(null);
   const [mapReady, setMapReady] = useState(false);
+  
+  
 
-
-  //let map:maplibregl.Map;
+  let map:maplibregl.Map;
   //let deck: MapboxOverlay;
   const loopafstand_cog_url = `cog://${loopafstand}`;
   
@@ -195,7 +197,7 @@ const arrow_layer =  new GeoArrowPolygonLayer({
           //background_layer,
           navigation_layer,
           selection_layer,
-          arrow_layer
+          //arrow_layer
         ];
 
 
@@ -212,18 +214,7 @@ const arrow_layer =  new GeoArrowPolygonLayer({
       
       mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"//"https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
     >
-      <Source
-          id="cogSource"
-          type="raster"
-          url={loopafstand_cog_url}//"cog://https://maplibre.org/maplibre-gl-js/docs/assets/cog.tif"
-        ></Source>
-
-        <Layer
-          id="cogLayer"
-          source= "cogSource"
-          type="raster"
-        >
-        </Layer>
+      
       <DeckGLOverlay layers={layers} />
     </ReactMap>);
 
