@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import wijken from "./assets/cbs_wijken_limburg.json?url";
 import bag_panden from "./assets/bag_pand_Limburg_uncompressed_3.arrow?url";
 //import bag_panden from "./assets/bag_pand_NL_uncompressed.arrow?url";
@@ -19,7 +19,7 @@ import * as arrow from "apache-arrow";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type {DeckProps} from '@deck.gl/core';
-import {Map as ReactMap, useControl, Source, Layer} from 'react-map-gl/maplibre';
+import {Map as ReactMapGl, useControl, Source, Layer} from 'react-map-gl/maplibre';
 import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
 
@@ -38,8 +38,7 @@ interface ChildProps {
 function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   const [table, setTable] = useState<arrow.Table | null>(null);
   const [mapReady, setMapReady] = useState(false);
-  
-  
+  const mapRef = useRef<MapRef>(null);
 
   let map:maplibregl.Map;
   //let deck: MapboxOverlay;
@@ -90,9 +89,7 @@ const navigation_layer = new GeoJsonLayer({
     getTextSize: 12,
     lineWidthMinPixels: 1,
     pickable: true,
-})
-  
-
+});
 
 const arrow_layer =  new GeoArrowPolygonLayer({
     id: "geoarrow-polygons",
@@ -114,6 +111,17 @@ const arrow_layer =  new GeoArrowPolygonLayer({
         "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
     ),
 });
+
+  const onMapLoad = useCallback(() => {
+    if (!mapRef.current) return;
+    map = mapRef.current.getMap();
+    map.doubleClickZoom.disable();
+    map.dragRotate.disable();
+    map.touchPitch.disable();
+    map.boxZoom.disable();
+    map.setMaxPitch(0);
+
+  }, []);
   /*useEffect(() => {
     if (!mapReady) return;
 
@@ -205,18 +213,19 @@ const arrow_layer =  new GeoArrowPolygonLayer({
 
 
 
-    return (<ReactMap
+    return (<ReactMapGl
+      ref={mapRef}
       initialViewState={{
         longitude: 5.844702066665236,
         latitude: 50.91319982389477,
         zoom: 10
       }}
-      
       mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"//"https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+    onLoad={onMapLoad}
     >
       
       <DeckGLOverlay layers={layers} />
-    </ReactMap>);
+    </ReactMapGl>);
 
   /*return <DeckGL
       initialViewState={INITIAL_VIEW_STATE}
