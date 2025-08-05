@@ -24,11 +24,6 @@ import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
 import { List } from "@mui/material";
 
-function DeckGLOverlay(props: DeckProps) {
-  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
-  overlay.setProps(props);
-  return null;
-}
 maplibregl.addProtocol('cog', cogProtocol);
 
 interface ChildProps {
@@ -61,6 +56,10 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
       fetchData().catch(console.error);
     }
   }, [table]); // Add dependency array to prevent infinite re-renders
+
+  useEffect(() => {
+    updateLayer("selection-layer", {data:selectedPolygons});
+  }, [selectedPolygons]); // Add dependency array to prevent infinite re-renders
 
   /*useEffect(() => {
     if (!deck.current) 
