@@ -39,9 +39,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   const deck = useRef<MapboxOverlay>(null);
   //const [deckLayers, setDeckLayers] = useState<LayersList>([]);
   //let deckLayers: LayersList = [];
-  let showNavLayer:boolean= false;
-  let showSelLayer:boolean= false;
-  
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetch(bag_panden);
@@ -153,6 +151,11 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     return deckLayers;
   }
 
+  function layerIsInDeckLayers(layerId:string) : boolean {
+    let layers = getDeckLayers().filter((layer: any) => layer.id === layerId);
+    return layers.length !== 0;
+  }
+
   const addLayer = useCallback((layer: any) => {
     if (deck.current) {
       //let currentMap = map.current!.getMap();
@@ -160,7 +163,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
       
       
       deck.current.setProps({
-        layers: [[...getDeckLayers()], layer]
+        layers: [...getDeckLayers(), layer]
         //layers: [[...deckLayers], layer]
       });
       //setDeckLayers([...deckLayers, layer]);
@@ -178,24 +181,20 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   }, []);
 
   function toggleNavLayer(){
-    if (showNavLayer) {
+    if (layerIsInDeckLayers("navigation-layer")) {
       removeLayer("navigation-layer");
-      
     } else {
       addLayer(createNavigationLayer());
     }
-    showNavLayer = !showNavLayer;
     return;
   };
 
   function toggleSelLayer(){
-    if (showSelLayer) {
+    if (layerIsInDeckLayers("selection-layer")) {
       removeLayer("selection-layer");
-      
     } else {
       addLayer(createSelectionLayer());
     }
-    showSelLayer = !showSelLayer;
     return;
   };
 
