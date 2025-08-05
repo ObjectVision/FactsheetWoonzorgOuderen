@@ -39,12 +39,15 @@ interface ChildProps {
 function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   const [table, setTable] = useState<arrow.Table | null>(null);
   const [mapReady, setMapReady] = useState(false);
-  const [deckLayers, setDeckLayers] = useState<any>([]);
-  const mapRef = useRef<MapRef>(null);
-  const overlayRef = useRef<MapboxOverlay | null>(null);
-
-  let map: maplibregl.Map;
-  let deck: MapboxOverlay;
+  //const [deckLayers, setDeckLayers] = useState<LayersList>([]);
+  const map = useRef<MapRef>(null);
+  const deck = useRef<MapboxOverlay>(null);
+  let deckLayers: LayersList = [];
+  let showNavLayer:boolean= false;
+  let showSelLayer:boolean= false;
+  
+  //let map: maplibregl.Map;
+  //let deck: MapboxOverlay;
   
   useEffect(() => {
     const fetchData = async () => {
@@ -59,12 +62,19 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     }
   }, [table]); // Add dependency array to prevent infinite re-renders
 
-
+  /*useEffect(() => {
+    if (!deck.current) 
+      return;
+    deck.current.setProps({
+        layers: deckLayers
+      });
+  }, [deckLayers]);*/
 
   // Create navigation layer (base layer)
   const createNavigationLayer = useCallback(() => {
     return new GeoJsonLayer({
       id: 'navigation-layer',
+      beforeId: 'deck-foreground-anchor',
       data: wijken,
       opacity: 1.0,
       stroked: true,
@@ -101,6 +111,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   const createSelectionLayer = useCallback(() => {
     return new GeoJsonLayer({
       id: 'selection-layer',
+      beforeId: 'deck-foreground-anchor',
       data: {
         type: 'FeatureCollection',
         features: selectedPolygons,
@@ -116,7 +127,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   }, [selectedPolygons]);
 
   // Update deck layers when selectedPolygons changes
-  useEffect(() => {
+  /*useEffect(() => {
     if (overlayRef.current) {
       const navigationLayer = createNavigationLayer();
       const selectionLayer = createSelectionLayer();
@@ -128,92 +139,118 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
       
       setDeckLayers([navigationLayer, selectionLayer]);
     }
-  }, [selectedPolygons, createNavigationLayer, createSelectionLayer]);
+  }, [selectedPolygons, createNavigationLayer, createSelectionLayer]);*/
 
   const onMapLoad = useCallback(() => {
-    if (!mapRef.current) return;
+    if (!map.current) return;
     
-    map = mapRef.current.getMap();
-    map.doubleClickZoom.disable();
-    map.dragRotate.disable();
-    map.touchPitch.disable();
-    map.boxZoom.disable();
-    map.setMaxPitch(0);
+    let currentMap = map.current.getMap();
+    currentMap.doubleClickZoom.disable();
+    currentMap.dragRotate.disable();
+    currentMap.touchPitch.disable();
+    currentMap.boxZoom.disable();
+    currentMap.setMaxPitch(0);
 
     // Add anchor layers for deck.gl
-    map.addLayer({
+    currentMap.addLayer({
       id: 'deck-background-anchor',
       type: 'background',
       layout: { visibility: 'none' }
     });
-    map.addLayer({
+    currentMap.addLayer({
       id: 'deck-foreground-anchor',
       type: 'background',
       layout: { visibility: 'none' }
     });
 
     // Create initial layers
-    const navigationLayer = createNavigationLayer();
-    const selectionLayer = createSelectionLayer();
+    //const navigationLayer = createNavigationLayer();
+    //const selectionLayer = createSelectionLayer();
 
     // Create deck overlay
     
-    deck = new MapboxOverlay({ 
-      layers: [selectionLayer],
+    deck.current = new MapboxOverlay({ 
+      layers: [],
       // Optional: specify layer order more explicitly
 
     });
     
-    map.addControl(deck);
-    overlayRef.current = deck;
-    setDeckLayers([navigationLayer, selectionLayer]); 
+    map.current.addControl(deck.current);
+    //overlayRef.current = deck;
+    //setDeckLayers([]); //navigationLayer, selectionLayer
     setMapReady(true);
 
-  }, [createNavigationLayer, createSelectionLayer]);
+  }, []); // createNavigationLayer, createSelectionLayer
 
   // Function to dynamically add/remove layers
   const addLayer = useCallback((layer: any) => {
-    if (overlayRef.current) {
-      
-      overlayRef.current.setProps({
+    if (deck.current) {
+      let currentMap = map.current!.getMap();
+      let layersOrder = currentMap.getLayersOrder();
+      deck.current.setProps({
         layers: [...deckLayers, layer]
       });
+      deckLayers = [...deckLayers, layer];
+      //setDeckLayers([...deckLayers, layer]);
     }
   }, []);
 
-  function addNavLayer(){
-    const nvlr = createNavigationLayer();
-    addLayer(nvlr);
+  const removeLayer = useCallback((layerId: string) => {
+    if (deck.current) {
+      const filteredLayers = deckLayers.filter((layer: any) => layer.id !== layerId);
+      deck.current.setProps({
+        layers: filteredLayers
+      });
+      deckLayers = filteredLayers;
+    }
+  }, []);
+
+  function toggleNavLayer(){
+    if (showNavLayer) {
+      removeLayer("navigation-layer");
+      
+    } else {
+      addLayer(createNavigationLayer());
+    }
+    showNavLayer = !showNavLayer;
+    return;
+  };
+
+  function toggleSelLayer(){
+    if (showSelLayer) {
+      removeLayer("selection-layer");
+      
+    } else {
+      addLayer(createSelectionLayer());
+    }
+    showSelLayer = !showSelLayer;
     return;
   };
 
 
-  const removeLayer = useCallback((layerId: string) => {
-    if (overlayRef.current) {
-      const filteredLayers = deckLayers.filter((layer: any) => layer.id !== layerId);
-      overlayRef.current.setProps({
-        layers: filteredLayers
-      });
-    }
-  }, []);
+
 
   // Function to update a specific layer
   const updateLayer = useCallback((layerId: string, newProps: any) => {
-    if (overlayRef.current) {
+    if (deck.current) {
       const updatedLayers = deckLayers.map((layer: any) => 
         layer.id === layerId ? layer.clone(newProps) : layer
       );
-      overlayRef.current.setProps({
+      deckLayers = updatedLayers;
+      deck.current.setProps({
         layers: updatedLayers
       });
+
+      //setDeckLayers(updatedLayers);
     }
   }, []);
 
   return (
       <div id ="central-map">
-        <button onClick={addNavLayer}>add layer</button>
+        <button onClick={toggleNavLayer}>toggle nav layer</button>
+        <button onClick={toggleSelLayer}>toggle sel layer</button>
       <ReactMapGl
-        ref={mapRef}
+        ref={map}
         initialViewState={{
           longitude: 5.844702066665236,
           latitude: 50.91319982389477,
