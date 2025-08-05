@@ -32,17 +32,15 @@ interface ChildProps {
 }
 
 function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
+  
   const [table, setTable] = useState<arrow.Table | null>(null);
   const [mapReady, setMapReady] = useState(false);
-  //const [deckLayers, setDeckLayers] = useState<LayersList>([]);
   const map = useRef<MapRef>(null);
   const deck = useRef<MapboxOverlay>(null);
-  let deckLayers: LayersList = [];
+  //const [deckLayers, setDeckLayers] = useState<LayersList>([]);
+  //let deckLayers: LayersList = [];
   let showNavLayer:boolean= false;
   let showSelLayer:boolean= false;
-  
-  //let map: maplibregl.Map;
-  //let deck: MapboxOverlay;
   
   useEffect(() => {
     const fetchData = async () => {
@@ -60,14 +58,6 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   useEffect(() => {
     updateLayer("selection-layer", {data:selectedPolygons});
   }, [selectedPolygons]); // Add dependency array to prevent infinite re-renders
-
-  /*useEffect(() => {
-    if (!deck.current) 
-      return;
-    deck.current.setProps({
-        layers: deckLayers
-      });
-  }, [deckLayers]);*/
 
   // Create navigation layer (base layer)
   const createNavigationLayer = useCallback(() => {
@@ -125,21 +115,6 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     });
   }, [selectedPolygons]);
 
-  // Update deck layers when selectedPolygons changes
-  /*useEffect(() => {
-    if (overlayRef.current) {
-      const navigationLayer = createNavigationLayer();
-      const selectionLayer = createSelectionLayer();
-      
-      // Update the overlay with new layers
-      overlayRef.current.setProps({
-        layers: [navigationLayer, selectionLayer] // Order matters: navigation first, selection on top
-      });
-      
-      setDeckLayers([navigationLayer, selectionLayer]);
-    }
-  }, [selectedPolygons, createNavigationLayer, createSelectionLayer]);*/
-
   const onMapLoad = useCallback(() => {
     if (!map.current) return;
     
@@ -161,46 +136,44 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
       type: 'background',
       layout: { visibility: 'none' }
     });
-
-    // Create initial layers
-    //const navigationLayer = createNavigationLayer();
-    //const selectionLayer = createSelectionLayer();
-
-    // Create deck overlay
     
     deck.current = new MapboxOverlay({ 
       layers: [],
-      // Optional: specify layer order more explicitly
-
     });
     
     map.current.addControl(deck.current);
-    //overlayRef.current = deck;
-    //setDeckLayers([]); //navigationLayer, selectionLayer
     setMapReady(true);
 
-  }, []); // createNavigationLayer, createSelectionLayer
+  }, []);
 
-  // Function to dynamically add/remove layers
+  function getDeckLayers(): LayersList {
+    if (!deck.current)
+      return [];
+    const deckLayers = (deck.current as any)._props.layers;
+    return deckLayers;
+  }
+
   const addLayer = useCallback((layer: any) => {
     if (deck.current) {
-      let currentMap = map.current!.getMap();
-      let layersOrder = currentMap.getLayersOrder();
+      //let currentMap = map.current!.getMap();
+      //let layersOrder = currentMap.getLayersOrder();
+      
+      
       deck.current.setProps({
-        layers: [...deckLayers, layer]
+        layers: [[...getDeckLayers()], layer]
+        //layers: [[...deckLayers], layer]
       });
-      deckLayers = [...deckLayers, layer];
       //setDeckLayers([...deckLayers, layer]);
+      //deckLayers = [...deckLayers, layer];
     }
   }, []);
 
   const removeLayer = useCallback((layerId: string) => {
     if (deck.current) {
-      const filteredLayers = deckLayers.filter((layer: any) => layer.id !== layerId);
+      const filteredLayers = getDeckLayers().filter((layer: any) => layer.id !== layerId);
       deck.current.setProps({
         layers: filteredLayers
       });
-      deckLayers = filteredLayers;
     }
   }, []);
 
@@ -226,21 +199,14 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     return;
   };
 
-
-
-
-  // Function to update a specific layer
   const updateLayer = useCallback((layerId: string, newProps: any) => {
     if (deck.current) {
-      const updatedLayers = deckLayers.map((layer: any) => 
+      const updatedLayers = getDeckLayers().map((layer: any) => 
         layer.id === layerId ? layer.clone(newProps) : layer
       );
-      deckLayers = updatedLayers;
       deck.current.setProps({
         layers: updatedLayers
       });
-
-      //setDeckLayers(updatedLayers);
     }
   }, []);
 
@@ -258,7 +224,6 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
         mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
         onLoad={onMapLoad}
       >
-        {/* You can add additional controls or components here */}
       </ReactMapGl>
       </div>
 
