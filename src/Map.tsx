@@ -1,27 +1,17 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import bag_panden from "./assets/bag_pand_Limburg_uncompressed_3.arrow?url";
 //import bag_panden from "./assets/bag_pand_NL_uncompressed.arrow?url";
-import loopafstand from "./assets/grid/loopafstand_huisarts_cog.tif?url";
-//import loopafstand from "./assets/grid/loopafstand_huisarts_cog_gdal.tif?url";
-
-//import test_cog from "./assets/grid/GHS_POP_E2015_COGeoN.tif?url";
-
-//import {DeckGL} from '@deck.gl/react';
 import {MapboxOverlay} from '@deck.gl/mapbox';
-import type {PickingInfo} from '@deck.gl/core';
-import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers';
-import {TileLayer} from '@deck.gl/geo-layers';
+import {GeoJsonLayer} from '@deck.gl/layers';
 import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
 import * as arrow from "apache-arrow";
-//import CogBitmapLayer from '@gisatcz/deckgl-geolib/src/cogbitmaplayer/CogBitmapLayer';
-//import { GeoTIFFLoader } from '@loaders.gl/geotiff';
+import {RecordBatchReader, Table, tableFromIPC, tableFromArrays } from "apache-arrow";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import type {DeckProps, LayersList} from '@deck.gl/core';
-import {Map as ReactMapGl, useControl, Source, Layer} from 'react-map-gl/maplibre';
+import type {LayersList} from '@deck.gl/core';
+import {Map as ReactMapGl, Source, Layer} from 'react-map-gl/maplibre';
 import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
-import { List } from "@mui/material";
 
 maplibregl.addProtocol('cog', cogProtocol);
 
@@ -32,17 +22,38 @@ interface ChildProps {
 
 function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   
-  const [table, setTable] = useState<arrow.Table | null>(null);
+  const [table, setTable] = useState<Table | null>(null);
   const [mapReady, setMapReady] = useState(false);
   const map = useRef<MapRef>(null);
   const deck = useRef<MapboxOverlay>(null);
 
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchData = async () => {
-      const data = await fetch(bag_panden);
+      const response = await fetch("http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.arrow");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const arrayBuffer = await response.arrayBuffer();
+      const reader = RecordBatchReader.from(arrayBuffer);
+      
+      setTable(new Table(reader));
+    };
+
+    if (!table) {
+      fetchData().catch(console.error);
+    }
+  }, [table]);*/
+
+    useEffect(() => {
+    // declare the data fetching function
+    const fetchData = async () => {
+      const data = await fetch("http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.arrow");
       const buffer = await data.arrayBuffer();
       const table = arrow.tableFromIPC(buffer);
-      setTable(table);
+      const table2 = new arrow.Table(table.batches.slice(0, 10));
+      //window.table = table2;
+      setTable(table2);
     };
 
     if (!table) {
@@ -54,11 +65,96 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     updateLayer("selection-layer", {data:selectedPolygons});
   }, [selectedPolygons]);
 
+  const arrow_layer =  new GeoArrowPolygonLayer({
+      id: "navigation-layer",
+      stroked: false,
+      filled: true,
+      data: table!,
+      getFillColor: [255, 0, 0, 255],
+      getLineColor: [0, 0, 0],
+      lineWidthMinPixels: 0.001,
+      extruded: false,
+      wireframe: false,
+      // getElevation: 0,
+      pickable: false,
+      positionFormat: "XY",
+      _normalize: false,
+      autoHighlight: false,
+      // Note: change this version string if needed
+      earcutWorkerUrl: new URL(
+        "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
+      ),
+    });
+
+  const createGeoArrowNavigationLayer = useCallback( async() => {
+    const arrow_layer =  new GeoArrowPolygonLayer({
+      id: "navigation-layer",
+      stroked: false,
+      filled: true,
+      data: table!,
+      getFillColor: [255, 0, 0, 255],
+      getLineColor: [0, 0, 0],
+      lineWidthMinPixels: 0.001,
+      extruded: false,
+      wireframe: false,
+      // getElevation: 0,
+      pickable: false,
+      positionFormat: "XY",
+      _normalize: false,
+      autoHighlight: false,
+      // Note: change this version string if needed
+      earcutWorkerUrl: new URL(
+        "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
+      ),
+    });
+    return arrow_layer;
+  }, [table]);
+
+  /*const createNavigationLayer = useCallback( async() => {
+    return new GeoArrowPolygonLayer({
+      id: 'navigation-layer',
+      beforeId: 'deck-foreground-anchor',
+      data: table!,
+      opacity: 1.0,
+      _normalize: false,
+      autoHighlight: false,
+      earcutWorkerUrl: new URL(
+        "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
+      ),
+      stroked: true,
+      filled: true,
+      onClick: ({ object }: any) => {
+        if (!object) return;
+
+        setSelectedPolygons(prev => {
+          const maxFeatures = 3;
+          const index = prev.findIndex((f) => f.properties!.WK_CODE === object.properties.WK_CODE);
+          if (index !== -1)
+            return prev.filter((_, i) => i !== index);
+
+          const updated = [...prev, object];
+          return updated.slice(-maxFeatures);
+        });
+      },
+      parameters: {
+        depthTest: false,
+        depthRange: [0, 1]
+      },
+      getLineColor: [256, 256, 256, 100],
+      getFillColor: [72, 191, 145, 100],
+      getLineWidth: 5,
+      getPointRadius: 4,
+      getTextSize: 12,
+      lineWidthMinPixels: 1,
+      pickable: true,
+    });
+  }, [setSelectedPolygons]);*/
+
   const createNavigationLayer = useCallback(() => {
     return new GeoJsonLayer({
       id: 'navigation-layer',
       beforeId: 'deck-foreground-anchor',
-      data: 'http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/cbs_wijken_limburg.json',
+      data: 'http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.json',
       opacity: 1.0,
       stroked: true,
       filled: true,
@@ -170,7 +266,26 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     if (layerIsInDeckLayers("navigation-layer")) {
       removeLayer("navigation-layer");
     } else {
-      addLayer(createNavigationLayer());
+      addLayer(new GeoArrowPolygonLayer({
+      id: "navigation-layer",
+      stroked: false,
+      filled: true,
+      data: table!,
+      getFillColor: [255, 0, 0, 255],
+      getLineColor: [0, 0, 0],
+      lineWidthMinPixels: 0.001,
+      extruded: false,
+      wireframe: false,
+      // getElevation: 0,
+      pickable: false,
+      positionFormat: "XY",
+      _normalize: false,
+      autoHighlight: false,
+      // Note: change this version string if needed
+      earcutWorkerUrl: new URL(
+        "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
+      ),
+    }));//createGeoArrowNavigationLayer());
     }
     return;
   };
@@ -213,7 +328,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
         <Source
           id="cogSource"
           type="raster"
-          url="cog://http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/grid/loopafstand_huisarts_cog.tif"
+          url="cog://http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/raster/loopafstand_huisarts_cog.tif"
         ></Source>
 
         <Layer
