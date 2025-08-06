@@ -208,7 +208,19 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
         }}
         mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
         onLoad={onMapLoad}
-      >
+        
+      >      
+        <Source
+          id="cogSource"
+          type="raster"
+          url="cog://http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/grid/loopafstand_huisarts_cog.tif"
+        ></Source>
+
+        <Layer
+          id="cogLayer"
+          source= "cogSource"
+          type="raster"
+        />
       </ReactMapGl>
       </div>
 
