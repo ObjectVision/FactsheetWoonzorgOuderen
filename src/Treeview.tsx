@@ -44,7 +44,7 @@ interface Props {
   setShowLayerControl: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function LayerTreeView({showLayerControl, setShowLayerControl}:Props) {
+function Treeview({showLayerControl, setShowLayerControl}:Props) {
   if (showLayerControl == false) {
     return;
   }
@@ -65,4 +65,4 @@ function LayerTreeView({showLayerControl, setShowLayerControl}:Props) {
   );
 }
 
-export default LayerTreeView;
+export default Treeview;

@@ -49,12 +49,12 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
           stroked: true,
           filled: true,
           data: table2!,
-      getLineColor: [256, 256, 256, 255],
-      getFillColor: [72, 191, 145, 100],
-      getLineWidth: 5,
-      getPointRadius: 4,
-      getTextSize: 12,
-      lineWidthMinPixels: 1,
+          getLineColor: [256, 256, 256, 255],
+          getFillColor: [72, 191, 145, 100],
+          getLineWidth: 5,
+          getPointRadius: 4,
+          getTextSize: 12,
+          lineWidthMinPixels: 1,
           extruded: false,
           wireframe: false,
           // getElevation: 0,
@@ -219,7 +219,19 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
       });
     }
   }, []);
+/*
+        <Source
+          id="cogSource"
+          type="raster"
+          url="cog://http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/raster/loopafstand_huisarts_cog.tif"
+        ></Source>
 
+        <Layer
+          id="cogLayer"
+          source= "cogSource"
+          type="raster"
+        />
+*/
   return (
       <div id ="central-map">
         <button onClick={toggleNavLayer}>toggle nav layer</button>
@@ -233,19 +245,8 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
         }}
         mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
         onLoad={onMapLoad}
-        
       >      
-        <Source
-          id="cogSource"
-          type="raster"
-          url="cog://http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/raster/loopafstand_huisarts_cog.tif"
-        ></Source>
 
-        <Layer
-          id="cogLayer"
-          source= "cogSource"
-          type="raster"
-        />
       </ReactMapGl>
       </div>
 
