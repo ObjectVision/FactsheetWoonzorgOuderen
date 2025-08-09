@@ -1,9 +1,9 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, type AnyActionArg } from "react";
 import bag_panden from "./assets/bag_pand_Limburg_uncompressed_3.arrow?url";
 //import bag_panden from "./assets/bag_pand_NL_uncompressed.arrow?url";
 import {MapboxOverlay} from '@deck.gl/mapbox';
 import {GeoJsonLayer} from '@deck.gl/layers';
-import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
+import { GeoArrowPolygonLayer, type GeoArrowPolygonLayerProps } from "@geoarrow/deck.gl-layers";
 import * as arrow from "apache-arrow";
 import {RecordBatchReader, Table, tableFromIPC, tableFromArrays } from "apache-arrow";
 import maplibregl from "maplibre-gl";
@@ -13,14 +13,13 @@ import {Map as ReactMapGl, Source, Layer} from 'react-map-gl/maplibre';
 import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
 import { ArrowLoader } from '@loaders.gl/arrow';
-
 maplibregl.addProtocol('cog', cogProtocol);
 
 interface ChildProps {
   selectedPolygons: GeoJSON.Feature[];
   setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>;
 }
-
+  
 function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   
   //const [table, setTable] = useState<Table>();
@@ -30,138 +29,51 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   const deck = useRef<MapboxOverlay>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetch(tableUrl!);
+    //updateLayer("selection-layer", {data:selectedPolygons});
+  }, [selectedPolygons]);
+
+  useEffect(() => {
+    // declare the data fetching function
+    if (!tableUrl)
+      return;
+
+    const fetchData = async (tableUrl:URL) => {
+      const data = await fetch(tableUrl);//"http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.arrow");
       const buffer = await data.arrayBuffer();
       const table = arrow.tableFromIPC(buffer);
       const table2 = new arrow.Table(table.batches.slice(0, 10));
+      //window.table = table2;
+      //setTable(table2);
       addLayer(new GeoArrowPolygonLayer({
-        id: "navigation-layer",
-        stroked: false,
-        filled: true,
-        data : table2,
-        getFillColor: [255, 0, 0, 255],
-        getLineColor: [0, 0, 0],
-        lineWidthMinPixels: 0.001,
-        extruded: false,
-        wireframe: false,
-        pickable: false,
-        positionFormat: "XY",
-        _normalize: false,
-        autoHighlight: false,
-        earcutWorkerUrl: new URL(
-          "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
-      )}));
+          id: "navigation-layer",
+          stroked: false,
+          filled: true,
+          data: table2!,
+          getFillColor: [255, 0, 0, 255],
+          getLineColor: [0, 0, 0],
+          lineWidthMinPixels: 0.001,
+          extruded: false,
+          wireframe: false,
+          // getElevation: 0,
+          pickable: false,
+          positionFormat: "XY",
+          _normalize: false,
+          autoHighlight: false,
+          // Note: change this version string if needed
+          earcutWorkerUrl: new URL(
+            "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
+          ),
+        }))
+      return;
     };
-    fetchData().catch(console.error);
+
+
+    fetchData(tableUrl).catch(console.error);
+
   }, [tableUrl]);
 
-    /*useEffect(() => {
-      // declare the data fetching function
-      const fetchData = async () => {
-        const data = await fetch("http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.arrow");
-        const buffer = await data.arrayBuffer();
-        const table = arrow.tableFromIPC(buffer);
-        const table2 = new arrow.Table(table.batches.slice(0, 10));
-        //window.table = table2;
-        setTable(table2);
-    };
 
-    if (!table) {
-      fetchData().catch(console.error);
-    }
-  }, [table]);*/
-
-  useEffect(() => {
-    updateLayer("selection-layer", {data:selectedPolygons});
-  }, [selectedPolygons]);
-
-  /*const arrow_layer =  new GeoArrowPolygonLayer({
-      id: "navigation-layer",
-      stroked: false,
-      filled: true,
-      data: table!,
-      getFillColor: [255, 0, 0, 255],
-      getLineColor: [0, 0, 0],
-      lineWidthMinPixels: 0.001,
-      extruded: false,
-      wireframe: false,
-      // getElevation: 0,
-      pickable: false,
-      positionFormat: "XY",
-      _normalize: false,
-      autoHighlight: false,
-      // Note: change this version string if needed
-      earcutWorkerUrl: new URL(
-        "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
-      ),
-    });*/
-
-  /*const createGeoArrowNavigationLayer = useCallback( async() => {
-    const arrow_layer =  new GeoArrowPolygonLayer({
-      id: "navigation-layer",
-      stroked: false,
-      filled: true,
-      data: table!,
-      getFillColor: [255, 0, 0, 255],
-      getLineColor: [0, 0, 0],
-      lineWidthMinPixels: 0.001,
-      extruded: false,
-      wireframe: false,
-      // getElevation: 0,
-      pickable: false,
-      positionFormat: "XY",
-      _normalize: false,
-      autoHighlight: false,
-      // Note: change this version string if needed
-      earcutWorkerUrl: new URL(
-        "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
-      ),
-    });
-    return arrow_layer;
-  }, [table]);*/
-
-  /*const createNavigationLayer = useCallback( async() => {
-    return new GeoArrowPolygonLayer({
-      id: 'navigation-layer',
-      beforeId: 'deck-foreground-anchor',
-      data: table!,
-      opacity: 1.0,
-      _normalize: false,
-      autoHighlight: false,
-      earcutWorkerUrl: new URL(
-        "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
-      ),
-      stroked: true,
-      filled: true,
-      onClick: ({ object }: any) => {
-        if (!object) return;
-
-        setSelectedPolygons(prev => {
-          const maxFeatures = 3;
-          const index = prev.findIndex((f) => f.properties!.WK_CODE === object.properties.WK_CODE);
-          if (index !== -1)
-            return prev.filter((_, i) => i !== index);
-
-          const updated = [...prev, object];
-          return updated.slice(-maxFeatures);
-        });
-      },
-      parameters: {
-        depthTest: false,
-        depthRange: [0, 1]
-      },
-      getLineColor: [256, 256, 256, 100],
-      getFillColor: [72, 191, 145, 100],
-      getLineWidth: 5,
-      getPointRadius: 4,
-      getTextSize: 12,
-      lineWidthMinPixels: 1,
-      pickable: true,
-    });
-  }, [setSelectedPolygons]);*/
-
-  const createNavigationLayer = useCallback(() => {
+  const createNavigationLayerOld = useCallback(() => {
     return new GeoJsonLayer({
       id: 'navigation-layer',
       beforeId: 'deck-foreground-anchor',
@@ -279,6 +191,7 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
     } else {
       const url: URL = new URL("http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.arrow"); 
       setTableUrl(url);
+      //addLayer(createNavigationLayer());
     }
       
     return;
