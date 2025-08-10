@@ -1,0 +1,10 @@
+{
+  "sources": {
+    "loopafstanden": {
+      "id": "loopafstanden",
+      "type": "raster",
+      "url": "{loopafstand_cog_url}"
+    }
+  }
+}
+

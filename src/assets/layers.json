@@ -1,0 +1,25 @@
+{
+  "layers": [
+    {
+        "id": "navigation-layer",
+        "type": "geoarrow-polygon",
+        "url": "http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.arrow",
+        "props":{
+            "stroked": true,
+            "filled": true,
+            "getLineColor": [256, 256, 256, 255],
+            "getFillColor": [72, 191, 145, 100],
+            "getLineWidth": 5,
+            "getPointRadius": 4,
+            "getTextSize": 12,
+            "lineWidthMinPixels": 1,
+            "extruded": false,
+            "wireframe": false,
+            "pickable": false,
+            "positionFormat": "XY",
+            "_normalize": false,
+            "autoHighlight": false
+        }
+    }
+  ]
+}

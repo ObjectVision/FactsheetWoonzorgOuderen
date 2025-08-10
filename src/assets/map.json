@@ -1,0 +1,21 @@
+[
+
+      {
+        "id": "100001",
+        "label": "Gebiedsindelingen",
+        "children": [
+          {
+            "id":"110001",
+            "label":"CBS",
+            "children": [
+              {
+                "id":"111001",
+                "label": "Wijk",
+                "icon": "Test",
+                "layer": "navigation-layer"
+              }
+            ]
+          }
+        ]
+      }
+    ]

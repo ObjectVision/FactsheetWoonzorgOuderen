@@ -1,9 +1,24 @@
-import * as React from 'react';
+import { useEffect, useState} from "react";
 import Box from '@mui/material/Box';
 import type { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
+import {
+  useTreeViewApiRef,
+} from "@mui/x-tree-view";
 
-const MUI_X_PRODUCTS: TreeViewBaseItem[] = [
+export type TreeViewItemModelProperties = {
+  name?: string;
+  id?: string;
+  label?: string;
+  layer?: string;
+  tree?: string;
+  icon?: string;
+};
+export type TreeViewItem<R extends {} = TreeViewItemModelProperties> = R & {
+  children?: TreeViewItem<R>[];
+};
+
+const ITEMS: TreeViewItem[] = [
   {
     id: 'grid',
     label: 'Data Grid',
@@ -41,13 +56,32 @@ const MUI_X_PRODUCTS: TreeViewBaseItem[] = [
 
 interface Props {
   showLayerControl: boolean;
-  setShowLayerControl: React.Dispatch<React.SetStateAction<boolean>>;
+  mapJSON: TreeViewItem[];
+  //setShowLayerControl: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function Treeview({showLayerControl, setShowLayerControl}:Props) {
+function Treeview({showLayerControl, mapJSON}:Props) {
   if (showLayerControl == false) {
     return;
   }
+  const apiRef = useTreeViewApiRef();
+  
+  function getItemChildren(item:any) {
+    //return item.children;
+  }
+
+  /*useEffect(() => {
+    if (!mapJSON)
+      return;
+
+    if (!apiRef)
+      return;
+    
+  }, [mapJSON]);*/
+
+
+  if (!mapJSON)
+    return;
 
   return (
     <Box sx={{ minHeight: 352, 
@@ -60,7 +94,7 @@ function Treeview({showLayerControl, setShowLayerControl}:Props) {
                position:'absolute',
                borderRadius: 1,
                padding: 0 }}>
-      <RichTreeView items={MUI_X_PRODUCTS} />
+      <RichTreeView items={mapJSON} apiRef={apiRef} />
     </Box>
   );
 }

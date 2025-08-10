@@ -29,6 +29,12 @@ function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   const deck = useRef<MapboxOverlay>(null);
 
   useEffect(() => {
+    if (!mapReady)
+      return;
+    
+  }, [mapReady]);
+
+  useEffect(() => {
     //updateLayer("selection-layer", {data:selectedPolygons});
   }, [selectedPolygons]);
 
