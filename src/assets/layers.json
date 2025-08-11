@@ -1,5 +1,4 @@
-{
-  "layers": [
+[
     {
         "id": "navigation-layer",
         "type": "geoarrow-polygon",
@@ -21,5 +20,4 @@
             "autoHighlight": false
         }
     }
-  ]
-}
+]

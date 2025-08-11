@@ -15,6 +15,7 @@
     "@geoarrow/deck.gl-layers": "^0.3.1",
     "@geomatico/maplibre-cog-protocol": "^0.5.0",
     "@gisatcz/deckgl-geolib": "^1.11.2",
+    "@loaders.gl/arrow": "^4.3.4",
     "@loaders.gl/core": "^4.3.4",
     "@loaders.gl/flatgeobuf": "^4.3.4",
     "@loaders.gl/geotiff": "^4.3.4",

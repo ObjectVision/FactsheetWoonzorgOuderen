@@ -22,9 +22,9 @@ function App() {
   const [selectedPolygons, setSelectedPolygons] = useState<GeoJSON.Feature[]>([]);
   const [showLayerControl, setshowLayerControl] = useState<boolean>(true);
   const [sourceJSON, setsourceJSON] = useState<JSON>();
-  const [layerJSON, setlayerJSON] = useState<JSON>();
-  const [mapJSON, setmapJSON] = useState<TreeViewItem[]>([{id: '', label: '', children: []}]); 
-  
+  const [layerJSON, setlayerJSON] = useState<JSON[]>();
+  const [mapJSON, setmapJSON] = useState<TreeViewItem[]>([{id: '', label: '', children: []}]);
+  const [latestChangedLayer, setLatestChangedLayer] = useState<[boolean, TreeViewItem]|undefined>();
 
   useEffect(() => {
     console.log(currentNeighborhood);
@@ -51,14 +51,14 @@ function App() {
     <div>
       <div id="details-area">
         <TitleBox/>
-        <Treeview showLayerControl={showLayerControl} mapJSON={mapJSON}/>
+        <Treeview setLatestChangedLayer={setLatestChangedLayer} showLayerControl={showLayerControl} mapJSON={mapJSON}/>
         <TreeviewControl showLayerControl={showLayerControl} setShowLayerControl={setshowLayerControl}/>
         <Controls/>
         <FeatureCards selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons} />
       </div>
       
       <div id="map-area">
-        <Map selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons}/>
+        <Map latestChangedLayer={latestChangedLayer} sourceJSON={sourceJSON} layerJSON={layerJSON} selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons}/>
       </div>
     </div>
   );

@@ -13,25 +13,96 @@ import {Map as ReactMapGl, Source, Layer} from 'react-map-gl/maplibre';
 import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
 import { ArrowLoader } from '@loaders.gl/arrow';
+import type {TreeViewItem} from './Treeview.tsx'
+
 maplibregl.addProtocol('cog', cogProtocol);
 
 interface ChildProps {
+  latestChangedLayer:[boolean, TreeViewItem]|undefined;
+  sourceJSON: JSON|undefined;
+  layerJSON: JSON[]|undefined;
   selectedPolygons: GeoJSON.Feature[];
   setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>;
 }
-  
-function Map({ selectedPolygons, setSelectedPolygons }: ChildProps) {
-  
+
+function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: ChildProps) {
   //const [table, setTable] = useState<Table>();
   const [mapReady, setMapReady] = useState(false);
   const [tableUrl, setTableUrl] = useState<URL>();
   const map = useRef<MapRef>(null);
   const deck = useRef<MapboxOverlay>(null);
 
+  function getLayerDef(layerId:string) {
+    for (var layer of layerJSON!) {
+      if (layer.id == layerId) {
+        return layer;
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (!latestChangedLayer)
+      return;
+    
+    if (!sourceJSON)
+      return;
+
+    if (!layerJSON)
+      return;
+
+    const layerDef = getLayerDef(latestChangedLayer[1]!.layer!);
+    const fetchData = async (tableUrl:URL) => {
+      const data = await fetch(tableUrl);//"http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.arrow");
+      const buffer = await data.arrayBuffer();
+      const table = arrow.tableFromIPC(buffer);
+      const table2 = new arrow.Table(table.batches.slice(0, 10));
+      //window.table = table2;
+      //setTable(table2);
+      addLayer(new GeoArrowPolygonLayer({
+          id: "navigation-layer",
+          stroked: true,
+          filled: true,
+          data: table2!,
+          getLineColor: [256, 256, 256, 255],
+          getFillColor: [72, 191, 145, 100],
+          getLineWidth: 5,
+          getPointRadius: 4,
+          getTextSize: 12,
+          lineWidthMinPixels: 1,
+          extruded: false,
+          wireframe: false,
+          // getElevation: 0,
+          pickable: false,
+          positionFormat: "XY",
+          _normalize: false,
+          autoHighlight: false,
+          // Note: change this version string if needed
+          earcutWorkerUrl: new URL(
+            "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
+          ),
+        }))
+      return;
+    };
+
+    if (!layerDef)
+      return;
+
+    if (layerDef.type==="geoarrow-polygon") {
+      if (layerIsInDeckLayers(layerDef.id)) {
+        removeLayer(layerDef.id);
+      } else {
+        fetchData(layerDef.url);
+      }
+    }
+
+    let i = 0;
+
+  }, [latestChangedLayer]);
+
   useEffect(() => {
     if (!mapReady)
       return;
-    
+
   }, [mapReady]);
 
   useEffect(() => {
