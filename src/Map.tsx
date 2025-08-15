@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback, type AnyActionArg } from "react";
-import bag_panden from "./assets/bag_pand_Limburg_uncompressed_3.arrow?url";
+//import bag_panden from "./assets/bag_pand_Limburg_uncompressed_3.arrow?url";
 //import bag_panden from "./assets/bag_pand_NL_uncompressed.arrow?url";
 import {MapboxOverlay} from '@deck.gl/mapbox';
 import {GeoJsonLayer} from '@deck.gl/layers';
@@ -12,7 +12,7 @@ import type {LayersList} from '@deck.gl/core';
 import {Map as ReactMapGl, Source, Layer} from 'react-map-gl/maplibre';
 import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
-import { ArrowLoader } from '@loaders.gl/arrow';
+//import { ArrowLoader } from '@loaders.gl/arrow';
 import type {TreeViewItem} from './Treeview.tsx'
 
 maplibregl.addProtocol('cog', cogProtocol);
@@ -71,8 +71,26 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
           lineWidthMinPixels: 1,
           extruded: false,
           wireframe: false,
+          onClick: ({ object }: any) => {
+            if (!object) return;
+            const jsonFeature = object.toJSON();
+            const test = JSON.stringify(object.toJSON())
+            //const geometryJSON = jsonFeature.geometry.toJSON();
+            const newlySelectedFeature = JSON.parse(test);
+            setSelectedPolygons(prev => {
+              if (!prev || prev.length===0)
+                return [newlySelectedFeature];
+              const maxFeatures = 3;
+              const index = prev.findIndex((f) => f!.WK_CODE === newlySelectedFeature.WK_CODE);
+              if (index !== -1)
+                return prev.filter((_, i) => i !== index);
+    
+              const updated = [...prev, newlySelectedFeature];
+              return updated.slice(-maxFeatures);
+            });
+          },
           // getElevation: 0,
-          pickable: false,
+          pickable: true,
           positionFormat: "XY",
           _normalize: false,
           autoHighlight: false,
@@ -106,10 +124,10 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
   }, [mapReady]);
 
   useEffect(() => {
-    //updateLayer("selection-layer", {data:selectedPolygons});
+    updateLayer("selection-layer", {data:selectedPolygons});
   }, [selectedPolygons]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     // declare the data fetching function
     if (!tableUrl)
       return;
@@ -150,7 +168,7 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
 
     fetchData(tableUrl).catch(console.error);
 
-  }, [tableUrl]);
+  }, [tableUrl]);*/
 
 
   const createNavigationLayerOld = useCallback(() => {

@@ -43,9 +43,9 @@ export default function FeatureCards({ selectedPolygons, setSelectedPolygons }: 
           </IconButton>
           <CardContent>
             
-            <Typography variant="h6">{feature.properties!.naam}</Typography>
+            <Typography variant="h6">{feature!.naam}</Typography>
             <Typography variant="body2" color="text.secondary">
-                <strong>WK_CODE:</strong> {feature.properties!.WK_CODE}
+                <strong>WK_CODE:</strong> {feature!.WK_CODE}
             </Typography>
           </CardContent>
         </Card>
