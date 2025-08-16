@@ -23,6 +23,37 @@ interface ChildProps {
   layerJSON: JSON[]|undefined;
   selectedPolygons: GeoJSON.Feature[];
   setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>;
+} // TODO redo GeoJSON.Feature
+
+type CustomPolygon = {
+  naam: string;
+  WK_CODE: string;
+  geometry: {
+    x: number;
+    y: number;
+  }[][][]; // matches [[[ {x,y}, ... ]]]
+};
+
+export function toGeoJSONFeature(input: CustomPolygon): GeoJSON.Feature<GeoJSON.Polygon> {
+  // Convert from {x,y} to [x,y] pairs
+  const coordinates = input.geometry.map((multiRing) =>
+    multiRing.map((ring) =>
+      ring.map((point) => [point.x, point.y] as [number, number])
+    )
+  );
+
+  // Build a GeoJSON Feature
+  return {
+    type: "Feature",
+    geometry: {
+      type: "Polygon",
+      coordinates: coordinates[0] // take first polygon shell (no MultiPolygon in your example)
+    },
+    properties: {
+      naam: input.naam,
+      WK_CODE: input.WK_CODE
+    }
+  };
 }
 
 function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: ChildProps) {
@@ -73,21 +104,28 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
           wireframe: false,
           onClick: ({ object }: any) => {
             if (!object) return;
-            const jsonFeature = object.toJSON();
-            const test = JSON.stringify(object.toJSON())
+            //let newSelectionTable = new arrow.Table();
+            //newSelectionTable.assign .batches = [object];
+            //const jsonFeature = object.toJSON();
+            //const test = object.
+            //const jsonArray = object.toArray();
+            //const newSelectionTable = arrow.Table
+            const jsonFeature = toGeoJSONFeature(JSON.parse(JSON.stringify(object.toJSON())));
+            //const testJSON = arrow.tableFromArrays(jsonArray);
             //const geometryJSON = jsonFeature.geometry.toJSON();
-            const newlySelectedFeature = JSON.parse(test);
+            //const newlySelectedFeature = JSON.parse(test);
             setSelectedPolygons(prev => {
               if (!prev || prev.length===0)
-                return [newlySelectedFeature];
+                return [jsonFeature];
               const maxFeatures = 3;
-              const index = prev.findIndex((f) => f!.WK_CODE === newlySelectedFeature.WK_CODE);
+              const index = prev.findIndex((f) => f!.properties!.WK_CODE === jsonFeature.properties!.WK_CODE);
               if (index !== -1)
                 return prev.filter((_, i) => i !== index);
     
-              const updated = [...prev, newlySelectedFeature];
+              const updated = [...prev, jsonFeature];
               return updated.slice(-maxFeatures);
             });
+
           },
           // getElevation: 0,
           pickable: true,
@@ -171,6 +209,8 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
   }, [tableUrl]);*/
 
 
+
+  
   const createNavigationLayerOld = useCallback(() => {
     return new GeoJsonLayer({
       id: 'navigation-layer',

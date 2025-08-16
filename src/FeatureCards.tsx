@@ -4,13 +4,10 @@ import IconButton from '@mui/material/IconButton';
 // Optional: define GeoJSON.Feature type if not available
 //type Feature = GeoJSON.Feature;
 
-
 interface ChildProps {
   selectedPolygons: GeoJSON.Feature[];
   setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>;
 }
-
-
 
 export default function FeatureCards({ selectedPolygons, setSelectedPolygons }: ChildProps) {
   if (!selectedPolygons)
@@ -43,9 +40,9 @@ export default function FeatureCards({ selectedPolygons, setSelectedPolygons }: 
           </IconButton>
           <CardContent>
             
-            <Typography variant="h6">{feature!.naam}</Typography>
+            <Typography variant="h6">{feature.properties!.naam}</Typography>
             <Typography variant="body2" color="text.secondary">
-                <strong>WK_CODE:</strong> {feature!.WK_CODE}
+                <strong>WK_CODE:</strong> {feature.properties!.WK_CODE}
             </Typography>
           </CardContent>
         </Card>
