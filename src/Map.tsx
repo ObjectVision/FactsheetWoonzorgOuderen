@@ -86,14 +86,13 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
       const data = await fetch(tableUrl);//"http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.arrow");
       const buffer = await data.arrayBuffer();
       const table = arrow.tableFromIPC(buffer);
-      const table2 = new arrow.Table(table.batches.slice(0, 10));
-      //window.table = table2;
-      //setTable(table2);
+      //const table2 = new arrow.Table(table.batches.slice(0, 10));
       addLayer(new GeoArrowPolygonLayer({
           id: "navigation-layer",
+          beforeId: "foreground-anchor",
           stroked: true,
           filled: true,
-          data: table2!,
+          data: table!,
           getLineColor: [256, 256, 256, 255],
           getFillColor: [72, 191, 145, 100],
           getLineWidth: 5,
@@ -103,17 +102,9 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
           extruded: false,
           wireframe: false,
           onClick: ({ object }: any) => {
-            if (!object) return;
-            //let newSelectionTable = new arrow.Table();
-            //newSelectionTable.assign .batches = [object];
-            //const jsonFeature = object.toJSON();
-            //const test = object.
-            //const jsonArray = object.toArray();
-            //const newSelectionTable = arrow.Table
+            if (!object) 
+              return;
             const jsonFeature = toGeoJSONFeature(JSON.parse(JSON.stringify(object.toJSON())));
-            //const testJSON = arrow.tableFromArrays(jsonArray);
-            //const geometryJSON = jsonFeature.geometry.toJSON();
-            //const newlySelectedFeature = JSON.parse(test);
             setSelectedPolygons(prev => {
               if (!prev || prev.length===0)
                 return [jsonFeature];
@@ -127,12 +118,10 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
             });
 
           },
-          // getElevation: 0,
           pickable: true,
           positionFormat: "XY",
           _normalize: false,
           autoHighlight: false,
-          // Note: change this version string if needed
           earcutWorkerUrl: new URL(
             "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
           ),
@@ -165,91 +154,10 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
     updateLayer("selection-layer", {data:selectedPolygons});
   }, [selectedPolygons]);
 
-  /*useEffect(() => {
-    // declare the data fetching function
-    if (!tableUrl)
-      return;
-
-    const fetchData = async (tableUrl:URL) => {
-      const data = await fetch(tableUrl);//"http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.arrow");
-      const buffer = await data.arrayBuffer();
-      const table = arrow.tableFromIPC(buffer);
-      const table2 = new arrow.Table(table.batches.slice(0, 10));
-      //window.table = table2;
-      //setTable(table2);
-      addLayer(new GeoArrowPolygonLayer({
-          id: "navigation-layer",
-          stroked: true,
-          filled: true,
-          data: table2!,
-          getLineColor: [256, 256, 256, 255],
-          getFillColor: [72, 191, 145, 100],
-          getLineWidth: 5,
-          getPointRadius: 4,
-          getTextSize: 12,
-          lineWidthMinPixels: 1,
-          extruded: false,
-          wireframe: false,
-          // getElevation: 0,
-          pickable: false,
-          positionFormat: "XY",
-          _normalize: false,
-          autoHighlight: false,
-          // Note: change this version string if needed
-          earcutWorkerUrl: new URL(
-            "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
-          ),
-        }))
-      return;
-    };
-
-
-    fetchData(tableUrl).catch(console.error);
-
-  }, [tableUrl]);*/
-
-
-
-  
-  const createNavigationLayerOld = useCallback(() => {
-    return new GeoJsonLayer({
-      id: 'navigation-layer',
-      beforeId: 'deck-foreground-anchor',
-      data: 'http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.json',
-      opacity: 1.0,
-      stroked: true,
-      filled: true,
-      onClick: ({ object }: any) => {
-        if (!object) return;
-
-        setSelectedPolygons(prev => {
-          const maxFeatures = 3;
-          const index = prev.findIndex((f) => f.properties!.WK_CODE === object.properties.WK_CODE);
-          if (index !== -1)
-            return prev.filter((_, i) => i !== index);
-
-          const updated = [...prev, object];
-          return updated.slice(-maxFeatures);
-        });
-      },
-      parameters: {
-        depthTest: false,
-        depthRange: [0, 1]
-      },
-      getLineColor: [256, 256, 256, 100],
-      getFillColor: [72, 191, 145, 100],
-      getLineWidth: 5,
-      getPointRadius: 4,
-      getTextSize: 12,
-      lineWidthMinPixels: 1,
-      pickable: true,
-    });
-  }, [setSelectedPolygons]);
-
   const createSelectionLayer = useCallback(() => {
     return new GeoJsonLayer({
       id: 'selection-layer',
-      beforeId: 'deck-foreground-anchor',
+      beforeId: 'selection-anchor',
       data: {
         type: 'FeatureCollection',
         features: selectedPolygons,
@@ -262,7 +170,7 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
       getLineColor: [255, 0, 0, 255],
       pickable: false,
     });
-  }, [selectedPolygons]);
+  }, []);
 
   const onMapLoad = useCallback(() => {
     if (!map.current) return;
@@ -274,13 +182,19 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
     currentMap.boxZoom.disable();
     currentMap.setMaxPitch(0);
 
+
     currentMap.addLayer({
-      id: 'deck-background-anchor',
+      id: 'background-anchor',
       type: 'background',
       layout: { visibility: 'none' }
     });
     currentMap.addLayer({
-      id: 'deck-foreground-anchor',
+      id: 'foreground-anchor',
+      type: 'background',
+      layout: { visibility: 'none' }
+    });
+    currentMap.addLayer({
+      id: 'selection-anchor',
       type: 'background',
       layout: { visibility: 'none' }
     });
@@ -288,8 +202,9 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
     deck.current = new MapboxOverlay({ 
       layers: [],
     });
-    
     map.current.addControl(deck.current);
+
+    addLayer(createSelectionLayer());
     setMapReady(true);
 
   }, []);
@@ -307,11 +222,13 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
   }
 
   const addLayer = useCallback((layer: any) => {
-    if (deck.current) {     
-      deck.current.setProps({
-        layers: [...getDeckLayers(), layer]
-      });
-    }
+    if (!deck.current)
+      return; 
+    
+    deck.current.setProps({
+      layers: [layer, ...getDeckLayers()]
+    });
+
   }, []);
 
   const removeLayer = useCallback((layerId: string) => {

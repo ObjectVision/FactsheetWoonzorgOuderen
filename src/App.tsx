@@ -20,7 +20,7 @@ import map_json from "./assets/map.json?url";
 
 function App() {
   const [currentNeighborhood, setCurrentNeighborhood] = useState<string>("Test wijk");
-  const [selectedPolygons, setSelectedPolygons] = useState<GeoJSON.Feature[]>();
+  const [selectedPolygons, setSelectedPolygons] = useState<GeoJSON.Feature[]>([]);
   const [showLayerControl, setshowLayerControl] = useState<boolean>(true);
   const [sourceJSON, setsourceJSON] = useState<JSON>();
   const [layerJSON, setlayerJSON] = useState<JSON[]>();
