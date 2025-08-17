@@ -286,8 +286,6 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
 */
   return (
       <div id ="central-map">
-        <button onClick={toggleNavLayer}>toggle nav layer</button>
-        <button onClick={toggleSelLayer}>toggle sel layer</button>
       <ReactMapGl
         ref={map}
         initialViewState={{
