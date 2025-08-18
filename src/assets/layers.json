@@ -6,7 +6,7 @@
         "props":{
             "stroked": true,
             "filled": true,
-            "getLineColor": [256, 256, 256, 255],
+            "getLineColor": [255, 255, 255, 255],
             "getFillColor": [72, 191, 145, 100],
             "getLineWidth": 5,
             "getPointRadius": 4,
