@@ -14,7 +14,7 @@ import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
 //import { ArrowLoader } from '@loaders.gl/arrow';
 import type {TreeViewItem} from './Treeview.tsx';
-import {getDeckLayers, layerIsInDeckLayers, addDeckLayer, removeDeckLayer} from "./layers/layers";
+import {getDeckLayers, layerIsInDeckLayers, addDeckLayer, removeDeckLayer, updateDeckLayer} from "./layers/layers";
 
 maplibregl.addProtocol('cog', cogProtocol);
 
@@ -152,7 +152,7 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
   }, [mapReady]);
 
   useEffect(() => {
-    updateLayer("selection-layer", {data:selectedPolygons});
+    updateDeckLayer(deck, "selection-layer", {data:selectedPolygons});
   }, [selectedPolygons]);
 
   const createSelectionLayer = useCallback(() => {
@@ -210,59 +210,7 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
 
   }, []);
 
-  /*function getDeckLayers(): LayersList {
-    if (!deck.current)
-      return [];
-    const deckLayers = (deck.current as any)._props.layers;
-    return deckLayers;
-  }*/
-
-  /*function layerIsInDeckLayers(layerId:string) : boolean {
-    let layers = getDeckLayers(deck).filter((layer: any) => layer.id === layerId);
-    return layers.length !== 0;
-  }*/
-
-  /*const addLayer = useCallback((layer: any) => {
-    if (!deck.current)
-      return; 
-    
-    deck.current.setProps({
-      layers: [layer, ...getDeckLayers()]
-    });
-
-  }, []);*/
-
-  /*const removeLayer = useCallback((layerId: string) => {
-    if (deck.current) {
-      const filteredLayers = getDeckLayers().filter((layer: any) => layer.id !== layerId);
-      deck.current.setProps({
-        layers: filteredLayers
-      });
-    }
-  }, []);*/
-
-  function toggleNavLayer(){
-    if (layerIsInDeckLayers(deck, "navigation-layer")) {
-      removeDeckLayer(deck, "navigation-layer");
-    } else {
-      const url: URL = new URL("http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.arrow"); 
-      setTableUrl(url);
-      //addLayer(createNavigationLayer());
-    }
-      
-    return;
-  };
-
-  function toggleSelLayer(){
-    if (layerIsInDeckLayers(deck, "selection-layer")) {
-      removeDeckLayer(deck, "selection-layer");
-    } else {
-      addDeckLayer(deck, createSelectionLayer());
-    }
-    return;
-  };
-
-  const updateLayer = useCallback((layerId: string, newProps: any) => {
+  /*const updateLayer = useCallback((layerId: string, newProps: any) => {
     if (deck.current) {
       const updatedLayers = getDeckLayers(deck).map((layer: any) => 
         layer.id === layerId ? layer.clone(newProps) : layer
@@ -271,7 +219,7 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
         layers: updatedLayers
       });
     }
-  }, []);
+  }, []);*/
 /*
         <Source
           id="cogSource"

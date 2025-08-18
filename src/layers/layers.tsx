@@ -29,3 +29,14 @@ export function removeDeckLayer(deck: React.RefObject<any>, layerId: string) {
         layers: filteredLayers
       });
 }
+
+export function updateDeckLayer(deck: React.RefObject<any>, layerId: string, newProps: any) {
+  if (!deck.current) return;
+
+  const updatedLayers = getDeckLayers(deck).map((layer: any) => 
+    layer.id === layerId ? layer.clone(newProps) : layer
+  );
+  deck.current.setProps({
+    layers: updatedLayers
+  });
+}
