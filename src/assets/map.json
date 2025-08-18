@@ -8,7 +8,18 @@
                 "id":"111001",
                 "label": "Wijk",
                 "icon": "Test",
-                "layer": "navigation-layer"
+                "layer": "arrow-layer"
+          }
+        ]
+      },
+      {
+        "id": "200001",
+        "label": "Voorzieningen",
+        "children": [
+          {
+                "id":"211001",
+                "label": "Loopafstand huisarts",
+                "layer": "cog-layer"
           }
         ]
       }

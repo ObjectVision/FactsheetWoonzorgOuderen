@@ -72,3 +72,52 @@ export async function addGeoArrowPolygonDeckLayer(deck: React.RefObject<any>, la
         }))
       return;
 }
+
+export function addMaplibreSource(map: React.RefObject<any>, sourceDef:any) {
+  if (!map.current) return;
+  map.current.getMap().addSource(sourceDef.id, {
+    ...sourceDef
+  });
+}
+
+export function removeMaplibreSource(map: React.RefObject<any>, sourceId:string) {
+  if (!map.current) return;
+}
+
+export function addMaplibreLayer(map: React.RefObject<any>, layerDef:any) {
+  if (!map.current) return;
+  map.current.getMap().addLayer({
+    id: layerDef.id,
+    ...layerDef.props
+  });
+}
+
+export function removeMaplibreLayer(map: React.RefObject<any>, layerId:string) {
+  if (!map.current) return;
+}
+
+export function sourceIsInMaplibreSources(map: React.RefObject<any>, sourceId:string) : boolean {
+  //let layers = getDeckLayers(deck).filter((layer: any) => layer.id === layerId);
+  //return layers.length !== 0;
+  return false;
+}
+
+export function layerIsInMaplibreLayers(map: React.RefObject<any>, layerId:string) : boolean {
+  //let layers = getDeckLayers(deck).filter((layer: any) => layer.id === layerId);
+  //return layers.length !== 0;
+  return false;
+}
+
+export async function addCogMaplibreLayer(map: React.RefObject<any>, sourceDef:any, layerDef:any) {
+  if (!map.current) return;
+
+  const sourceId = sourceDef.id;
+  const layerId = layerDef.id;
+  if (!sourceIsInMaplibreSources(map, sourceId))
+    addMaplibreSource(map, sourceDef);
+
+  if (!layerIsInMaplibreLayers(map, layerId))
+    addMaplibreLayer(map, layerDef);
+
+  return;
+}

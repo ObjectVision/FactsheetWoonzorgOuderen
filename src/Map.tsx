@@ -14,13 +14,13 @@ import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
 //import { ArrowLoader } from '@loaders.gl/arrow';
 import type {TreeViewItem} from './Treeview.tsx';
-import {getDeckLayers, layerIsInDeckLayers, addDeckLayer, removeDeckLayer, updateDeckLayer, addGeoArrowPolygonDeckLayer} from "./layers/layers";
+import {getDeckLayers, layerIsInDeckLayers, addDeckLayer, removeDeckLayer, updateDeckLayer, addGeoArrowPolygonDeckLayer, addCogMaplibreLayer} from "./layers/layers";
 
 maplibregl.addProtocol('cog', cogProtocol);
 
 interface ChildProps {
   latestChangedLayer:[boolean, TreeViewItem]|undefined;
-  sourceJSON: JSON|undefined;
+  sourceJSON: JSON[]|undefined;
   layerJSON: JSON[]|undefined;
   selectedPolygons: GeoJSON.Feature[];
   setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>;
@@ -64,8 +64,8 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
   const map = useRef<MapRef>(null);
   const deck = useRef<MapboxOverlay>(null);
 
-  function getLayerDef(layerId:string) {
-    for (var layer of layerJSON!) {
+  function getLayerOrSourceDef(layerId:string, layerOrSourceJSON:JSON[]) {
+    for (var layer of layerOrSourceJSON!) {
       if (layer.id == layerId) {
         return layer;
       }
@@ -82,21 +82,30 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
     if (!layerJSON)
       return;
 
-    const layerDef = getLayerDef(latestChangedLayer[1]!.layer!);
+    const layerDef = getLayerOrSourceDef(latestChangedLayer[1]!.layer!, layerJSON);
 
     if (!layerDef)
       return;
 
-    if (layerDef.type==="geoarrow-polygon") {
-      if (layerIsInDeckLayers(deck, layerDef.id)) {
-        removeDeckLayer(deck, layerDef.id);
-      } else {
-        addGeoArrowPolygonDeckLayer(deck, layerDef, setSelectedPolygons); //fetchData(layerDef.url);
-      }
+    switch (layerDef.type) {
+      case "geoarrow-polygon": { 
+        if (layerIsInDeckLayers(deck, layerDef.id)) {
+          removeDeckLayer(deck, layerDef.id);
+        } else {
+          addGeoArrowPolygonDeckLayer(deck, layerDef, setSelectedPolygons);
+        }
+        break; 
+      } 
+      case "cog": { 
+          const sourceDef = getLayerOrSourceDef(layerDef.props.source, sourceJSON);
+          addCogMaplibreLayer(map, sourceDef, layerDef);
+          break; 
+      } 
+      default: { 
+          // throw error or warning, unknown layer type
+          break; 
+      } 
     }
-
-    let i = 0;
-
   }, [latestChangedLayer]);
 
   useEffect(() => {
@@ -136,7 +145,6 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
     currentMap.touchPitch.disable();
     currentMap.boxZoom.disable();
     currentMap.setMaxPitch(0);
-
 
     currentMap.addLayer({
       id: 'background-anchor',
