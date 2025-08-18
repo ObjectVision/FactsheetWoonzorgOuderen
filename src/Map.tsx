@@ -210,16 +210,6 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
 
   }, []);
 
-  /*const updateLayer = useCallback((layerId: string, newProps: any) => {
-    if (deck.current) {
-      const updatedLayers = getDeckLayers(deck).map((layer: any) => 
-        layer.id === layerId ? layer.clone(newProps) : layer
-      );
-      deck.current.setProps({
-        layers: updatedLayers
-      });
-    }
-  }, []);*/
 /*
         <Source
           id="cogSource"
