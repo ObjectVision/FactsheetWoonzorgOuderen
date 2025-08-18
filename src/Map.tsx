@@ -14,7 +14,7 @@ import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
 //import { ArrowLoader } from '@loaders.gl/arrow';
 import type {TreeViewItem} from './Treeview.tsx';
-import {getDeckLayers, layerIsInDeckLayers, addDeckLayer, removeDeckLayer, updateDeckLayer} from "./layers/layers";
+import {getDeckLayers, layerIsInDeckLayers, addDeckLayer, removeDeckLayer, updateDeckLayer, addGeoArrowPolygonDeckLayer} from "./layers/layers";
 
 maplibregl.addProtocol('cog', cogProtocol);
 
@@ -24,7 +24,7 @@ interface ChildProps {
   layerJSON: JSON[]|undefined;
   selectedPolygons: GeoJSON.Feature[];
   setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>;
-} // TODO redo GeoJSON.Feature
+}
 
 type CustomPolygon = {
   naam: string;
@@ -83,52 +83,6 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
       return;
 
     const layerDef = getLayerDef(latestChangedLayer[1]!.layer!);
-    const fetchData = async (tableUrl:URL) => {
-      const data = await fetch(tableUrl);//"http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.arrow");
-      const buffer = await data.arrayBuffer();
-      const table = arrow.tableFromIPC(buffer);
-      //const table2 = new arrow.Table(table.batches.slice(0, 10));
-      addDeckLayer(deck, new GeoArrowPolygonLayer({
-          id: "navigation-layer",
-          beforeId: "foreground-anchor",
-          stroked: true,
-          filled: true,
-          data: table!,
-          getLineColor: [256, 256, 256, 255],
-          getFillColor: [72, 191, 145, 100],
-          getLineWidth: 5,
-          getPointRadius: 4,
-          getTextSize: 12,
-          lineWidthMinPixels: 1,
-          extruded: false,
-          wireframe: false,
-          onClick: ({ object }: any) => {
-            if (!object) 
-              return;
-            const jsonFeature = toGeoJSONFeature(JSON.parse(JSON.stringify(object.toJSON())));
-            setSelectedPolygons(prev => {
-              if (!prev || prev.length===0)
-                return [jsonFeature];
-              const maxFeatures = 3;
-              const index = prev.findIndex((f) => f!.properties!.WK_CODE === jsonFeature.properties!.WK_CODE);
-              if (index !== -1)
-                return prev.filter((_, i) => i !== index);
-    
-              const updated = [...prev, jsonFeature];
-              return updated.slice(-maxFeatures);
-            });
-
-          },
-          pickable: true,
-          positionFormat: "XY",
-          _normalize: false,
-          autoHighlight: false,
-          earcutWorkerUrl: new URL(
-            "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
-          ),
-        }))
-      return;
-    };
 
     if (!layerDef)
       return;
@@ -137,7 +91,7 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
       if (layerIsInDeckLayers(deck, layerDef.id)) {
         removeDeckLayer(deck, layerDef.id);
       } else {
-        fetchData(layerDef.url);
+        addGeoArrowPolygonDeckLayer(deck, layerDef, setSelectedPolygons); //fetchData(layerDef.url);
       }
     }
 
