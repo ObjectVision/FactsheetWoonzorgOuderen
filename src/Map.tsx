@@ -3,17 +3,18 @@ import { useEffect, useState, useRef, useCallback, type AnyActionArg } from "rea
 //import bag_panden from "./assets/bag_pand_NL_uncompressed.arrow?url";
 import {MapboxOverlay} from '@deck.gl/mapbox';
 import {GeoJsonLayer} from '@deck.gl/layers';
-import { GeoArrowPolygonLayer, type GeoArrowPolygonLayerProps } from "@geoarrow/deck.gl-layers";
+import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
 import * as arrow from "apache-arrow";
 import {RecordBatchReader, Table, tableFromIPC, tableFromArrays } from "apache-arrow";
-import maplibregl from "maplibre-gl";
+import maplibregl, { DoubleClickZoomHandler } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type {LayersList} from '@deck.gl/core';
 import {Map as ReactMapGl, Source, Layer} from 'react-map-gl/maplibre';
 import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
 //import { ArrowLoader } from '@loaders.gl/arrow';
-import type {TreeViewItem} from './Treeview.tsx'
+import type {TreeViewItem} from './Treeview.tsx';
+import {getDeckLayers, layerIsInDeckLayers, addDeckLayer, removeDeckLayer} from "./layers/layers";
 
 maplibregl.addProtocol('cog', cogProtocol);
 
@@ -87,7 +88,7 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
       const buffer = await data.arrayBuffer();
       const table = arrow.tableFromIPC(buffer);
       //const table2 = new arrow.Table(table.batches.slice(0, 10));
-      addLayer(new GeoArrowPolygonLayer({
+      addDeckLayer(deck, new GeoArrowPolygonLayer({
           id: "navigation-layer",
           beforeId: "foreground-anchor",
           stroked: true,
@@ -133,8 +134,8 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
       return;
 
     if (layerDef.type==="geoarrow-polygon") {
-      if (layerIsInDeckLayers(layerDef.id)) {
-        removeLayer(layerDef.id);
+      if (layerIsInDeckLayers(deck, layerDef.id)) {
+        removeDeckLayer(deck, layerDef.id);
       } else {
         fetchData(layerDef.url);
       }
@@ -204,24 +205,24 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
     });
     map.current.addControl(deck.current);
 
-    addLayer(createSelectionLayer());
+    addDeckLayer(deck, createSelectionLayer());
     setMapReady(true);
 
   }, []);
 
-  function getDeckLayers(): LayersList {
+  /*function getDeckLayers(): LayersList {
     if (!deck.current)
       return [];
     const deckLayers = (deck.current as any)._props.layers;
     return deckLayers;
-  }
+  }*/
 
-  function layerIsInDeckLayers(layerId:string) : boolean {
-    let layers = getDeckLayers().filter((layer: any) => layer.id === layerId);
+  /*function layerIsInDeckLayers(layerId:string) : boolean {
+    let layers = getDeckLayers(deck).filter((layer: any) => layer.id === layerId);
     return layers.length !== 0;
-  }
+  }*/
 
-  const addLayer = useCallback((layer: any) => {
+  /*const addLayer = useCallback((layer: any) => {
     if (!deck.current)
       return; 
     
@@ -229,20 +230,20 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
       layers: [layer, ...getDeckLayers()]
     });
 
-  }, []);
+  }, []);*/
 
-  const removeLayer = useCallback((layerId: string) => {
+  /*const removeLayer = useCallback((layerId: string) => {
     if (deck.current) {
       const filteredLayers = getDeckLayers().filter((layer: any) => layer.id !== layerId);
       deck.current.setProps({
         layers: filteredLayers
       });
     }
-  }, []);
+  }, []);*/
 
   function toggleNavLayer(){
-    if (layerIsInDeckLayers("navigation-layer")) {
-      removeLayer("navigation-layer");
+    if (layerIsInDeckLayers(deck, "navigation-layer")) {
+      removeDeckLayer(deck, "navigation-layer");
     } else {
       const url: URL = new URL("http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.arrow"); 
       setTableUrl(url);
@@ -253,17 +254,17 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
   };
 
   function toggleSelLayer(){
-    if (layerIsInDeckLayers("selection-layer")) {
-      removeLayer("selection-layer");
+    if (layerIsInDeckLayers(deck, "selection-layer")) {
+      removeDeckLayer(deck, "selection-layer");
     } else {
-      addLayer(createSelectionLayer());
+      addDeckLayer(deck, createSelectionLayer());
     }
     return;
   };
 
   const updateLayer = useCallback((layerId: string, newProps: any) => {
     if (deck.current) {
-      const updatedLayers = getDeckLayers().map((layer: any) => 
+      const updatedLayers = getDeckLayers(deck).map((layer: any) => 
         layer.id === layerId ? layer.clone(newProps) : layer
       );
       deck.current.setProps({
