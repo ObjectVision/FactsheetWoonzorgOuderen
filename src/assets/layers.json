@@ -4,6 +4,7 @@
         "type": "geoarrow-polygon",
         "url": "http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.arrow",
         "props":{
+            "beforeId": "foreground-anchor",
             "stroked": true,
             "filled": true,
             "getLineColor": [255, 255, 255, 255],
@@ -14,7 +15,7 @@
             "lineWidthMinPixels": 1,
             "extruded": false,
             "wireframe": false,
-            "pickable": false,
+            "pickable": true,
             "positionFormat": "XY",
             "_normalize": false,
             "autoHighlight": false

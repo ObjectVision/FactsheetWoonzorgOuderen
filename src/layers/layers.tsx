@@ -46,19 +46,9 @@ export async function addGeoArrowPolygonDeckLayer(deck: React.RefObject<any>, la
       const buffer = await data.arrayBuffer();
       const table = arrow.tableFromIPC(buffer);
       addDeckLayer(deck, new GeoArrowPolygonLayer({
-          id: "navigation-layer",
-          beforeId: "foreground-anchor",
-          stroked: true,
-          filled: true,
+          ...layerDef.props,
+          id: layerDef.id,
           data: table!,
-          getLineColor: [256, 256, 256, 255],
-          getFillColor: [72, 191, 145, 100],
-          getLineWidth: 5,
-          getPointRadius: 4,
-          getTextSize: 12,
-          lineWidthMinPixels: 1,
-          extruded: false,
-          wireframe: false,
           onClick: ({ object }: any) => {
             if (!object) 
               return;
@@ -76,10 +66,6 @@ export async function addGeoArrowPolygonDeckLayer(deck: React.RefObject<any>, la
             });
 
           },
-          pickable: true,
-          positionFormat: "XY",
-          _normalize: false,
-          autoHighlight: false,
           earcutWorkerUrl: new URL(
             "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
           ),
