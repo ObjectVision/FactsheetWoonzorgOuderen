@@ -94,18 +94,15 @@ export function addMaplibreLayer(map: React.RefObject<any>, layerDef:any) {
 
 export function removeMaplibreLayer(map: React.RefObject<any>, layerId:string) {
   if (!map.current) return;
+  map.current.getMap().removeLayer(layerId);
 }
 
 export function sourceIsInMaplibreSources(map: React.RefObject<any>, sourceId:string) : boolean {
-  //let layers = getDeckLayers(deck).filter((layer: any) => layer.id === layerId);
-  //return layers.length !== 0;
-  return false;
+  return map.current.getMap().getSource(sourceId);
 }
 
 export function layerIsInMaplibreLayers(map: React.RefObject<any>, layerId:string) : boolean {
-  //let layers = getDeckLayers(deck).filter((layer: any) => layer.id === layerId);
-  //return layers.length !== 0;
-  return false;
+  return map.current.getMap().getLayer(layerId);
 }
 
 export async function addCogMaplibreLayer(map: React.RefObject<any>, sourceDef:any, layerDef:any) {

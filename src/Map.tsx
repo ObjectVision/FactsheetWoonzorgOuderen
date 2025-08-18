@@ -14,7 +14,7 @@ import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
 //import { ArrowLoader } from '@loaders.gl/arrow';
 import type {TreeViewItem} from './Treeview.tsx';
-import {getDeckLayers, layerIsInDeckLayers, addDeckLayer, removeDeckLayer, updateDeckLayer, addGeoArrowPolygonDeckLayer, addCogMaplibreLayer} from "./layers/layers";
+import {getDeckLayers, layerIsInDeckLayers, addDeckLayer, removeDeckLayer, updateDeckLayer, addGeoArrowPolygonDeckLayer, addCogMaplibreLayer, layerIsInMaplibreLayers, removeMaplibreLayer} from "./layers/layers";
 
 maplibregl.addProtocol('cog', cogProtocol);
 
@@ -97,9 +97,13 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
         break; 
       } 
       case "cog": { 
+        if (layerIsInMaplibreLayers(map, layerDef.id)) {
+          removeMaplibreLayer(map, layerDef.id) 
+        } else {
           const sourceDef = getLayerOrSourceDef(layerDef.props.source, sourceJSON);
           addCogMaplibreLayer(map, sourceDef, layerDef);
-          break; 
+        }
+        break; 
       } 
       default: { 
           // throw error or warning, unknown layer type
