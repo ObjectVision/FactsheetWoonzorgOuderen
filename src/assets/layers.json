@@ -2,7 +2,7 @@
     {
         "id": "arrow-layer",
         "type": "geoarrow-polygon",
-        "url": "http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/vector/cbs_wijken_limburg.arrow",
+        "url": "https://factsheetwoonzorgouderen.online/vector/cbs_wijken_limburg.arrow",
         "props":{
             "beforeId": "foreground-anchor",
             "stroked": true,

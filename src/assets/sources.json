@@ -2,6 +2,6 @@
     {
         "id": "cog-source",
         "type": "raster",
-        "url": "cog://http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/raster/loopafstand_huisarts_cog.tif"
+        "url": "cog://https://factsheetwoonzorgouderen.online/raster/loopafstand_huisarts_cog.tif"
     }
 ]
