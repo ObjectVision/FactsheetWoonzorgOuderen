@@ -22,8 +22,8 @@ interface ChildProps {
   latestChangedLayer:[boolean, TreeViewItem]|undefined;
   sourceJSON: JSON[]|undefined;
   layerJSON: JSON[]|undefined;
-  selectedPolygons: GeoJSON.Feature[];
-  setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>;
+  selectedPolygons: maplibregl.MapGeoJSONFeature[];
+  setSelectedPolygons: React.Dispatch<React.SetStateAction<maplibregl.MapGeoJSONFeature[]>>;
 }
 
 type CustomPolygon = {
@@ -72,7 +72,16 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
     }
   }
 
+  // update selected polygon viewstate
   useEffect(() => {
+    for (let i = 0; i<selectedPolygons.length; i++) {
+      const polygon = selectedPolygons[i];
+      map.current!.setFeatureState({id:polygon!.id, source: "wijk-navigation-source"}, {'state-level':i});
+    }
+    
+  }, selectedPolygons);
+
+  /*useEffect(() => {
     if (!latestChangedLayer)
       return;
     
@@ -116,11 +125,11 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
     if (!mapReady)
       return;
 
-  }, [mapReady]);
+  }, [mapReady]);*/
 
-  useEffect(() => {
+  /*useEffect(() => {
     updateDeckLayer(deck, "selection-layer", {data:selectedPolygons});
-  }, [selectedPolygons]);
+  }, [selectedPolygons]);*/
 
   const createSelectionLayer = useCallback(() => {
     return new GeoJsonLayer({
@@ -168,17 +177,59 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
     
     currentMap.addSource("wijk-navigation-source", {
       type: 'geojson',
-      data: wijken
+      data: wijken,
+      generateId: true
     });
 
     currentMap.addLayer({
       id: 'wijk-navigation-layer',
       type: 'fill',
       source: 'wijk-navigation-source',
-      paint: {
-        'fill-color': '#088',
+      paint: {//
+        'fill-color': [ //  // 67, 72, 120, 1 // 44, 137, 127, 1
+          'match',
+          ['feature-state', 'state-level'],
+           -1, 'rgba(237, 233, 157, 1)',
+            0, 'rgba(226, 64, 0, 1)',
+            1, 'rgba(67, 72, 120, 1)',
+            2, 'rgba(44, 137, 127, 1)',
+            'rgba(237, 233, 157, 1)' // default value if no match
+        ],
+
         'fill-opacity': 0.5
       }
+      
+    });
+
+    currentMap.on("click", "wijk-navigation-layer", (e)=>{
+      console.log(e, e.features);
+
+      const feature:maplibregl.MapGeoJSONFeature = e.features![0];
+      setSelectedPolygons(prev => {
+      if (!prev || prev.length===0) 
+        return [feature];
+      
+      const maxFeatures = 3;
+      let index = -1;
+      for (let i=0; i<prev.length; i++) {
+        const prevFeature = prev[i];
+        if (prevFeature.properties.WK_CODE === feature.properties!.WK_CODE) {
+          index = i;
+          break;
+        }
+      }
+
+      if (index !== -1) {
+        map.current!.setFeatureState({id:prev[index].properties.id, source: "wijk-navigation-source"}, {'state-level':-1});
+        return prev.filter((_, i) => i !== index);
+      }
+
+      const updated = [...prev, feature];
+      if (updated.length>maxFeatures) // handle neutral coloring of feature about to become unselected
+        map.current!.setFeatureState({id:updated.at(-1)!.id, source: "wijk-navigation-source"}, {'state-level':-1});
+
+      return updated.slice(-maxFeatures);
+      });      
     });
 
     deck.current = new MapboxOverlay({ 
@@ -186,9 +237,9 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
     });
     map.current.addControl(deck.current);
 
-    addDeckLayer(deck, createSelectionLayer());
+    //addDeckLayer(deck, createSelectionLayer());
     setMapReady(true);
-
+ 
   }, []);
 
   return (
