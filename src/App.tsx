@@ -1,11 +1,11 @@
 import { useEffect, useState} from "react";
 import "./App.css";
 import Map from "./Map.tsx"
-import SwipeableEdgeDrawer from "./Drawer.tsx";
+//import SwipeableEdgeDrawer from "./Drawer.tsx";
 import Factsheet from "./Factsheet.tsx"
 import FeatureCards from './FeatureCards';
 import SearchAppBar from './AppBar.tsx';
-import SubjectNav from './SubjectNav.tsx';
+//import SubjectNav from './SubjectNav.tsx';
 import Controls from './Controls.tsx'
 import TreeviewControl from "./TreeviewControl.tsx";
 import TitleBox from './Title.tsx'
