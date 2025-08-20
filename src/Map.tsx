@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback, type AnyActionArg } from "react";
 //import bag_panden from "./assets/bag_pand_Limburg_uncompressed_3.arrow?url";
-//import bag_panden from "./assets/bag_pand_NL_uncompressed.arrow?url";
+import wijken from "./assets/cbs_wijken_limburg.json?url";
 import {MapboxOverlay} from '@deck.gl/mapbox';
 import {GeoJsonLayer} from '@deck.gl/layers';
 import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
@@ -166,6 +166,21 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
       layout: { visibility: 'none' }
     });
     
+    currentMap.addSource("wijk-navigation-source", {
+      type: 'geojson',
+      data: wijken
+    });
+
+    currentMap.addLayer({
+      id: 'wijk-navigation-layer',
+      type: 'fill',
+      source: 'wijk-navigation-source',
+      paint: {
+        'fill-color': '#088',
+        'fill-opacity': 0.5
+      }
+    });
+
     deck.current = new MapboxOverlay({ 
       layers: [],
     });
@@ -176,19 +191,6 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
 
   }, []);
 
-/*
-        <Source
-          id="cogSource"
-          type="raster"
-          url="cog://http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/raster/loopafstand_huisarts_cog.tif"
-        ></Source>
-
-        <Layer
-          id="cogLayer"
-          source= "cogSource"
-          type="raster"
-        />
-*/
   return (
       <div id ="central-map">
       <ReactMapGl
