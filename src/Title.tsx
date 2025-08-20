@@ -8,13 +8,13 @@ const TitleBox: React.FC<{ title?: string }> = ({ title = 'Wonen & Zorg Limburg'
 <Box
   sx={{
     position: 'fixed',
-    top: 5,
+    top: 0,
     left: 5,
     right: 5,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ffffffd8',
+    backgroundColor: '#ffffffee',
     color: '#4a4a4ad3',
     height: 40,
     borderRadius: 1,
@@ -27,11 +27,9 @@ const TitleBox: React.FC<{ title?: string }> = ({ title = 'Wonen & Zorg Limburg'
     },
   }}
 >
-      <AssistWalkerIcon/>
       <Typography variant="h1" sx={{ fontSize: 30, fontWeight:'550', textAlign: 'center' }}>
         {title}
       </Typography>
-      <AccessibleForwardIcon/>
     </Box>
   );
 };
