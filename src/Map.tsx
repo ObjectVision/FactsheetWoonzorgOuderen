@@ -106,7 +106,7 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
     currentMap.setMaxPitch(0);
 
     currentMap.addControl(new maplibregl.NavigationControl({showCompass:false}), 'top-right')
-    currentMap.addControl(new MapControlButtons(currentMap), "top-right");
+    //currentMap.addControl(new MapControlButtons(currentMap), "top-right");
 
     currentMap.addLayer({
       id: 'background-anchor',
