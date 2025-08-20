@@ -1,17 +1,12 @@
 import { useEffect, useState} from "react";
 import "./App.css";
 import Map from "./Map.tsx"
-import SwipeableEdgeDrawer from "./Drawer.tsx";
-import Factsheet from "./Factsheet.tsx"
 import FeatureCards from './FeatureCards';
-import SearchAppBar from './AppBar.tsx';
-import SubjectNav from './SubjectNav.tsx';
 import Controls from './Controls.tsx'
 import TreeviewControl from "./TreeviewControl.tsx";
 import TitleBox from './Title.tsx'
 import Treeview from './Treeview.tsx'
 import type {TreeViewItem} from './Treeview.tsx'
-import * as arrow from "apache-arrow";
 
 //import type { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import sources_json from "./data/sources.json?url";

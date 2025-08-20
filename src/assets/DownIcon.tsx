@@ -11,12 +11,12 @@ const Button = styled.button`
   text-decoration: none;
 `;
 
-const CloseIcon = ({ onClick }) => {
+const DownIcon = ({ onClick }) => {
   return (
     <Button onClick={onClick}>
-      <i className="ri-close-line ri-1x"></i>
+      <i className="ri-arrow-down-wide-line"></i>
     </Button>
   );
 };
 
-export default CloseIcon;
+export default DownIcon;
