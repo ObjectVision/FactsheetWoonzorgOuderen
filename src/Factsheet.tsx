@@ -1,5 +1,5 @@
 import Panel from "./Panel"
-import * as batdata from "./assets/bat.json"
+import * as batdata from "./data/bat.json"
 interface FactsheetProps {
   currentNeighborhood: string;
 }

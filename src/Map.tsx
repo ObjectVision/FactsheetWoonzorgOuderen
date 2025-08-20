@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback, type AnyActionArg } from "react";
-//import bag_panden from "./assets/bag_pand_Limburg_uncompressed_3.arrow?url";
-//import bag_panden from "./assets/bag_pand_NL_uncompressed.arrow?url";
+//import bag_panden from "./data/bag_pand_Limburg_uncompressed_3.arrow?url";
+//import bag_panden from "./data/bag_pand_NL_uncompressed.arrow?url";
 import {MapboxOverlay} from '@deck.gl/mapbox';
 import {GeoJsonLayer} from '@deck.gl/layers';
 import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";

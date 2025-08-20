@@ -14,9 +14,9 @@ import type {TreeViewItem} from './Treeview.tsx'
 import * as arrow from "apache-arrow";
 
 //import type { TreeViewBaseItem } from '@mui/x-tree-view/models';
-import sources_json from "./assets/sources.json?url";
-import layers_json from "./assets/layers.json?url";
-import map_json from "./assets/map.json?url";
+import sources_json from "./data/sources.json?url";
+import layers_json from "./data/layers.json?url";
+import map_json from "./data/map.json?url";
 
 function App() {
   const [currentNeighborhood, setCurrentNeighborhood] = useState<string>("Test wijk");
