@@ -1,25 +1,18 @@
 import { useEffect, useState, useRef, useCallback, type AnyActionArg } from "react";
-//import bag_panden from "./assets/bag_pand_Limburg_uncompressed_3.arrow?url";
-import wijken from "./assets/cbs_wijken_limburg.json?url";
+
+import wijken from "./data/cbs_wijken_limburg.json?url";
 import {MapboxOverlay} from '@deck.gl/mapbox';
 import {GeoJsonLayer} from '@deck.gl/layers';
-import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
-import * as arrow from "apache-arrow";
-import {RecordBatchReader, Table, tableFromIPC, tableFromArrays } from "apache-arrow";
-import maplibregl, { DoubleClickZoomHandler } from "maplibre-gl";
+import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import type {LayersList} from '@deck.gl/core';
-import {Map as ReactMapGl, Source, Layer} from 'react-map-gl/maplibre';
+import { NavigationControl, Map as ReactMapGl} from 'react-map-gl/maplibre';
 import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
-//import { ArrowLoader } from '@loaders.gl/arrow';
-import type {TreeViewItem} from './Treeview.tsx';
-import {getDeckLayers, layerIsInDeckLayers, addDeckLayer, removeDeckLayer, updateDeckLayer, addGeoArrowPolygonDeckLayer, addCogMaplibreLayer, layerIsInMaplibreLayers, removeMaplibreLayer} from "./layers/layers";
+import MapControlButtons from "./assets/Controls";
 
 maplibregl.addProtocol('cog', cogProtocol);
 
 interface ChildProps {
-  latestChangedLayer:[boolean, TreeViewItem]|undefined;
   sourceJSON: JSON[]|undefined;
   layerJSON: JSON[]|undefined;
   selectedPolygons: maplibregl.MapGeoJSONFeature[];
@@ -34,6 +27,8 @@ type CustomPolygon = {
     y: number;
   }[][][]; // matches [[[ {x,y}, ... ]]]
 };
+
+
 
 export function toGeoJSONFeature(input: CustomPolygon): GeoJSON.Feature<GeoJSON.Polygon> {
   // Convert from {x,y} to [x,y] pairs
@@ -57,7 +52,7 @@ export function toGeoJSONFeature(input: CustomPolygon): GeoJSON.Feature<GeoJSON.
   };
 }
 
-function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: ChildProps) {
+function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: ChildProps) {
   //const [table, setTable] = useState<Table>();
   const [mapReady, setMapReady] = useState(false);
   const [tableUrl, setTableUrl] = useState<URL>();
@@ -81,55 +76,6 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
     
   }, selectedPolygons);*/
 
-  /*useEffect(() => {
-    if (!latestChangedLayer)
-      return;
-    
-    if (!sourceJSON)
-      return;
-
-    if (!layerJSON)
-      return;
-
-    const layerDef = getLayerOrSourceDef(latestChangedLayer[1]!.layer!, layerJSON);
-
-    if (!layerDef)
-      return;
-
-    switch (layerDef.type) {
-      case "geoarrow-polygon": { 
-        if (layerIsInDeckLayers(deck, layerDef.id)) {
-          removeDeckLayer(deck, layerDef.id);
-        } else {
-          addGeoArrowPolygonDeckLayer(deck, layerDef, setSelectedPolygons);
-        }
-        break; 
-      } 
-      case "cog": { 
-        if (layerIsInMaplibreLayers(map, layerDef.id)) {
-          removeMaplibreLayer(map, layerDef.id) 
-        } else {
-          const sourceDef = getLayerOrSourceDef(layerDef.props.source, sourceJSON);
-          addCogMaplibreLayer(map, sourceDef, layerDef);
-        }
-        break; 
-      } 
-      default: { 
-          // throw error or warning, unknown layer type
-          break; 
-      } 
-    }
-  }, [latestChangedLayer]);
-
-  useEffect(() => {
-    if (!mapReady)
-      return;
-
-  }, [mapReady]);*/
-
-  /*useEffect(() => {
-    updateDeckLayer(deck, "selection-layer", {data:selectedPolygons});
-  }, [selectedPolygons]);*/
 
   const createSelectionLayer = useCallback(() => {
     return new GeoJsonLayer({
@@ -158,6 +104,9 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
     currentMap.touchPitch.disable();
     currentMap.boxZoom.disable();
     currentMap.setMaxPitch(0);
+
+    currentMap.addControl(new maplibregl.NavigationControl({showCompass:false}), 'top-right')
+    currentMap.addControl(new MapControlButtons(currentMap), "top-right");
 
     currentMap.addLayer({
       id: 'background-anchor',

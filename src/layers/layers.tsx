@@ -2,8 +2,8 @@ import * as arrow from "apache-arrow";
 import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
 import { toGeoJSONFeature } from "../Map"
 import type {LayersList} from '@deck.gl/core';
-import wijken_arrow from "../assets/cbs_wijken_limburg.arrow?url";
-import loopafstand_huisarts_cog from "../assets/loopafstand_huisarts_cog.tif?url";
+import wijken_arrow from "../data/cbs_wijken_limburg.arrow?url";
+import loopafstand_huisarts_cog from "../data/loopafstand_huisarts_cog.tif?url";
 
 export function layerIsInDeckLayers(deck: React.RefObject<any>, layerId:string) : boolean {
   let layers = getDeckLayers(deck).filter((layer: any) => layer.id === layerId);

@@ -1,36 +1,26 @@
-import React from 'react';
-import { Box, Typography } from '@mui/material';
-import AssistWalkerIcon from '@mui/icons-material/AssistWalker';
-import AccessibleForwardIcon from '@mui/icons-material/AccessibleForward';
+import React from "react";
+import styled from "styled-components";
 
-const TitleBox: React.FC<{ title?: string }> = ({ title = 'Wonen & Zorg Limburg' }) => {
+const TitleContainer = styled.div`
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 8vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255,255,255,0.5);
+`;
+
+
+const TitleBox: React.FC<{ title?: string }> = ({
+  title = "Wonen & Zorg Limburg",
+}) => {
   return (
-<Box
-  sx={{
-    position: 'fixed',
-    top: 0,
-    left: 5,
-    right: 5,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ffffffee',
-    color: '#4a4a4ad3',
-    height: 40,
-    borderRadius: 1,
-    padding: 0,
-    stroke: '#4a4a4ad3',
-    strokeWidth: 0.3,
-    zIndex: 1300,
-    '&:focus': {
-      outline: 'none',
-    },
-  }}
->
-      <Typography variant="h1" sx={{ fontSize: 30, fontWeight:'550', textAlign: 'center' }}>
-        {title}
-      </Typography>
-    </Box>
+    <TitleContainer>
+      <h1><i className="ri-accessibility-fill"></i>
+       {title} </h1>
+    </TitleContainer>
   );
 };
 
