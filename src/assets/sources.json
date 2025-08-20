@@ -1,7 +1,6 @@
 [
     {
         "id": "cog-source",
-        "type": "raster",
-        "url": "cog://https://factsheetwoonzorgouderen.online/raster/loopafstand_huisarts_cog.tif"
+        "type": "raster"
     }
 ]

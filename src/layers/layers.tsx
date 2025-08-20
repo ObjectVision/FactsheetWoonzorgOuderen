@@ -2,6 +2,8 @@ import * as arrow from "apache-arrow";
 import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
 import { toGeoJSONFeature } from "../Map"
 import type {LayersList} from '@deck.gl/core';
+import wijken_arrow from "../assets/cbs_wijken_limburg.arrow?url";
+import loopafstand_huisarts_cog from "../assets/loopafstand_huisarts_cog.tif?url";
 
 export function layerIsInDeckLayers(deck: React.RefObject<any>, layerId:string) : boolean {
   let layers = getDeckLayers(deck).filter((layer: any) => layer.id === layerId);
@@ -42,7 +44,7 @@ export function updateDeckLayer(deck: React.RefObject<any>, layerId: string, new
 }
 
 export async function addGeoArrowPolygonDeckLayer(deck: React.RefObject<any>, layerDef:any, setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>) {
-      const data = await fetch(layerDef.url);
+      const data = await fetch(wijken_arrow);//layerDef.url);
       const buffer = await data.arrayBuffer();
       const table = arrow.tableFromIPC(buffer);
       addDeckLayer(deck, new GeoArrowPolygonLayer({
@@ -76,7 +78,8 @@ export async function addGeoArrowPolygonDeckLayer(deck: React.RefObject<any>, la
 export function addMaplibreSource(map: React.RefObject<any>, sourceDef:any) {
   if (!map.current) return;
   map.current.getMap().addSource(sourceDef.id, {
-    ...sourceDef
+    ...sourceDef,
+    url: loopafstand_huisarts_cog
   });
 }
 
