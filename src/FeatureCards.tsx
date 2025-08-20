@@ -1,7 +1,7 @@
 import CloseIcon from "./assets/CloseIcon";
 import styled from "styled-components";
 import DownIcon from "./assets/DownIcon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Optional: define GeoJSON.Feature type if not available
 //type Feature = GeoJSON.Feature;
@@ -89,6 +89,13 @@ export default function FeatureCards({
   const handleScrollDown = () => {
     setCollapsed(!collapsed);
   };
+
+  useEffect(()=>{
+    // remove container when no selected polygons
+    if(selectedPolygons.length <=0){
+      setCollapsed(false)
+    }
+  },[selectedPolygons])
 
   return (
     <Panel className={collapsed ? "collapsed" : ""}>
