@@ -1,22 +1,23 @@
 import { useEffect, useState, useRef, useCallback, type AnyActionArg } from "react";
 
-import wijken from "./data/cbs_wijken_limburg.json?url";
+//import wijken from "./data/cbs_wijken_limburg.json?url";
 import {MapboxOverlay} from '@deck.gl/mapbox';
-import {GeoJsonLayer} from '@deck.gl/layers';
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { NavigationControl, Map as ReactMapGl} from 'react-map-gl/maplibre';
 import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
-import MapControlButtons from "./assets/Controls";
+
+//import MapControlButtons from "./assets/Controls";
+import {addGeoArrowPolygonDeckLayer, addGeoJsonSelectionDeckLayer, updateDeckLayer} from "./layers/layers";
 
 maplibregl.addProtocol('cog', cogProtocol);
 
 interface ChildProps {
   sourceJSON: JSON[]|undefined;
   layerJSON: JSON[]|undefined;
-  selectedPolygons: maplibregl.MapGeoJSONFeature[];
-  setSelectedPolygons: React.Dispatch<React.SetStateAction<maplibregl.MapGeoJSONFeature[]>>;
+  selectedPolygons: GeoJSON.Feature[];
+  setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>;
 }
 
 type CustomPolygon = {
@@ -27,8 +28,6 @@ type CustomPolygon = {
     y: number;
   }[][][]; // matches [[[ {x,y}, ... ]]]
 };
-
-
 
 export function toGeoJSONFeature(input: CustomPolygon): GeoJSON.Feature<GeoJSON.Polygon> {
   // Convert from {x,y} to [x,y] pairs
@@ -67,6 +66,10 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
     }
   }
 
+  useEffect(() => {
+    updateDeckLayer(deck, "selection-layer", {data:selectedPolygons});
+  }, [selectedPolygons]);
+
   // update selected polygon viewstate
   /*useEffect(() => {
     for (let i = 0; i<selectedPolygons.length; i++) {
@@ -75,25 +78,6 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
     }
     
   }, selectedPolygons);*/
-
-
-  const createSelectionLayer = useCallback(() => {
-    return new GeoJsonLayer({
-      id: 'selection-layer',
-      beforeId: 'selection-anchor',
-      data: {
-        type: 'FeatureCollection',
-        features: selectedPolygons,
-      },
-      filled: false,
-      stroked: true,
-      opacity: 1.0,
-      getLineWidth: 42,
-      lineWidthMinPixels: 1,
-      getLineColor: [255, 0, 0, 255],
-      pickable: false,
-    });
-  }, []);
 
   const onMapLoad = useCallback(() => {
     if (!map.current) return;
@@ -124,13 +108,13 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
       layout: { visibility: 'none' }
     });
     
-    currentMap.addSource("wijk-navigation-source", {
+    /*currentMap.addSource("wijk-navigation-source", {
       type: 'geojson',
       data: wijken,
       generateId: true
-    });
+    });*/
 
-    currentMap.addLayer({
+    /*currentMap.addLayer({
       id: 'wijk-navigation-layer',
       type: 'fill',
       source: 'wijk-navigation-source',
@@ -185,13 +169,54 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
 
         return updated;
       });
-    });
+    });*/
 
     deck.current = new MapboxOverlay({ 
       layers: [],
     });
     map.current.addControl(deck.current);
 
+    const selectionLayerDef = {
+        "id": "selection-layer",
+        "type": "geojson-deckgl",
+        "props": {
+            "beforeId": "selection-anchor",
+            "filled": false,
+            "stroked": true,
+            "opacity": 1.0,
+            "getLineWidth": 42,
+            "lineWidthMinPixels": 1,
+            "getLineColor": [255, 0, 0, 255],
+            "pickable": false
+        }
+    };
+
+    addGeoJsonSelectionDeckLayer(deck, selectionLayerDef, selectedPolygons);
+    const navigationLayerDef = {
+        "id": "arrow-layer",
+        "type": "geoarrow-polygon",
+        "url": "https://factsheetwoonzorgouderen.online/vector/cbs_wijken_limburg.arrow",
+        "props":{
+            "beforeId": "foreground-anchor",
+            "stroked": true,
+            "filled": true,
+            "getLineColor": [255, 255, 255, 255],
+            "getFillColor": [72, 191, 145, 100],
+            "getLineWidth": 5,
+            "getPointRadius": 4,
+            "getTextSize": 12,
+            "lineWidthMinPixels": 1,
+            "extruded": false,
+            "wireframe": false,
+            "pickable": true,
+            "positionFormat": "XY",
+            "_normalize": false,
+            "autoHighlight": false
+        }
+    };
+
+
+    addGeoArrowPolygonDeckLayer(deck, navigationLayerDef, setSelectedPolygons);
     //addDeckLayer(deck, createSelectionLayer());
     setMapReady(true);
  

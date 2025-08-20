@@ -1,27 +1,5 @@
 [
     {
-        "id": "arrow-layer",
-        "type": "geoarrow-polygon",
-        "url": "https://factsheetwoonzorgouderen.online/vector/cbs_wijken_limburg.arrow",
-        "props":{
-            "beforeId": "foreground-anchor",
-            "stroked": true,
-            "filled": true,
-            "getLineColor": [255, 255, 255, 255],
-            "getFillColor": [72, 191, 145, 100],
-            "getLineWidth": 5,
-            "getPointRadius": 4,
-            "getTextSize": 12,
-            "lineWidthMinPixels": 1,
-            "extruded": false,
-            "wireframe": false,
-            "pickable": true,
-            "positionFormat": "XY",
-            "_normalize": false,
-            "autoHighlight": false
-        }
-    },
-    {
         "id": "cog-layer",
         "type": "cog",
         "props":{

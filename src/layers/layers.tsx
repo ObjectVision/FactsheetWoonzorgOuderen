@@ -2,8 +2,9 @@ import * as arrow from "apache-arrow";
 import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
 import { toGeoJSONFeature } from "../Map"
 import type {LayersList} from '@deck.gl/core';
-import wijken_arrow from "../data/cbs_wijken_limburg.arrow?url";
+//import wijken_arrow from "../data/cbs_wijken_limburg.arrow?url";
 import loopafstand_huisarts_cog from "../data/loopafstand_huisarts_cog.tif?url";
+import {GeoJsonLayer} from '@deck.gl/layers';
 
 export function layerIsInDeckLayers(deck: React.RefObject<any>, layerId:string) : boolean {
   let layers = getDeckLayers(deck).filter((layer: any) => layer.id === layerId);
@@ -43,8 +44,19 @@ export function updateDeckLayer(deck: React.RefObject<any>, layerId: string, new
   });
 }
 
+export async function addGeoJsonSelectionDeckLayer(deck: React.RefObject<any>, layerDef:any, selectedPolygons:GeoJSON.Feature[]) {
+  addDeckLayer(deck, new GeoJsonLayer({
+    ...layerDef.props,
+    id: layerDef.id,
+    data: {
+      type: 'FeatureCollection',
+      features: selectedPolygons,
+    }
+  }));
+}
+
 export async function addGeoArrowPolygonDeckLayer(deck: React.RefObject<any>, layerDef:any, setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>) {
-      const data = await fetch(wijken_arrow);//layerDef.url);
+      const data = await fetch(layerDef.url);
       const buffer = await data.arrayBuffer();
       const table = arrow.tableFromIPC(buffer);
       addDeckLayer(deck, new GeoArrowPolygonLayer({
