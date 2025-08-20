@@ -152,7 +152,7 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
             "lineCapRounded":true,
             "lineJointRounded":true,
             "getTextSize": 12,
-            "lineWidthMinPixels": 2,
+            "lineWidthMinPixels": 1,
             "extruded": false,
             "wireframe": false,
             "pickable": true,
