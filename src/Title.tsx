@@ -9,6 +9,7 @@ const TitleContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  color:rgba(2, 1, 1, 0.7);
   background-color: rgba(255,255,255,0.5);
 `;
 
