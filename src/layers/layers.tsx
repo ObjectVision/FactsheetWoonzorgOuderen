@@ -54,9 +54,9 @@ export async function addGeoJsonSelectionDeckLayer(deck: React.RefObject<any>, l
     },
     getLineColor: (feature, {index}) => {
       const colors = [
-        [228,26,28],     // red
-        [55,126,184],    // blue
-        [77,175,74],     // green
+        [217,95,2],    // red
+        [117,112,179], // purple
+        [27,158,119],  // green
       ];
       return colors[index % colors.length];
     },
