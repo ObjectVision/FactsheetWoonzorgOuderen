@@ -7,14 +7,14 @@ const Button = styled.button`
   border: none;
   padding: 1rem;
   cursor: pointer;
-  color: black;
+  color: grey;
   text-decoration: none;
 `;
 
-const CloseIcon = ({ onClick }) => {
+const CloseIcon = ({ className, onClick }) => {
   return (
-    <Button onClick={onClick}>
-      <i className="ri-close-line ri-1x"></i>
+    <Button className={className} onClick={onClick}>
+      <i className="ri-close-line ri-3x"></i>
     </Button>
   );
 };

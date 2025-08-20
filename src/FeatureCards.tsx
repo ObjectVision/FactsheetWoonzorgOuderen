@@ -18,7 +18,7 @@ const Panel = styled.div`
   z-index: 1300;
   overflow-y: hidden;
 
-  &.collapsed{
+  &.collapsed {
     overflow-y: scroll;
     height: 90vh;
   }
@@ -30,25 +30,43 @@ const PanelCard = styled.div`
   padding: 1rem;
   flex-grow: 1;
   border: rgb(128, 128, 128) 1px solid;
-  display: flex;
-  flex-direction: column;
+  border: none;
+
+  box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 1px, rgba(0, 0, 0, 0.07) 0px 2px 2px,
+    rgba(0, 0, 0, 0.07) 0px 4px 4px, rgba(0, 0, 0, 0.07) 0px 8px 8px,
+    rgba(0, 0, 0, 0.07) 0px 16px 16px;
+
   &#polygon-0 {
-    h2 {
-      color: red;
+    h2,
+    h3 {
+      color: #d95f02;
     }
-    border: red 5px solid;
+    border-bottom: #d95f02 15px solid;
   }
   &#polygon-1 {
-    h2 {
-      color: blue;
+    h2,
+    h3 {
+      color: #7570b3;
     }
-    border: blue 5px solid;
+    border-bottom: #7570b3 15px solid;
   }
   &#polygon-2 {
-    h2 {
-      color: green;
+    h2,
+    h3 {
+      color: #1b9e77;
     }
-    border: green 5px solid;
+    border-bottom: #1b9e77 15px solid;
+  }
+
+  > .top-right {
+    position: relative;
+    float: right;
+  }
+
+  > .center{
+    position:relative;
+    width: 100%;
+    float:center;
   }
 `;
 
@@ -64,26 +82,26 @@ export default function FeatureCards({
   if (!selectedPolygons) return;
 
   const [collapsed, setCollapsed] = useState(false);
-  
+
   const handleRemove = (indexToRemove: number) => {
     setSelectedPolygons((prev) => prev.filter((_, i) => i !== indexToRemove));
   };
   const handleScrollDown = () => {
-    setCollapsed(!collapsed)
-  }
+    setCollapsed(!collapsed);
+  };
 
   return (
-    <Panel className={collapsed? "collapsed": ""}>
+    <Panel className={collapsed ? "collapsed" : ""}>
       {selectedPolygons.map((feature: GeoJSON.Feature, idx: number) => (
         <PanelCard key={idx} id={`polygon-${idx}`}>
-          <CloseIcon onClick={() => handleRemove(idx)} />
+          <CloseIcon className="top-right" onClick={() => handleRemove(idx)} />
           <div className="card-content">
-            <h2>{feature.properties!.naam}</h2>
-            <p>
-              <strong>WK_CODE:</strong> {feature.properties!.WK_CODE}
-            </p>
+            <><h2>{feature.properties!.naam}</h2>
+            <h3>{feature.properties!.WK_CODE}</h3>
+            </>
+            <p>Meer info komt hier</p>
           </div>
-          <DownIcon onClick={() => handleScrollDown()}/>
+          <DownIcon className="center" onClick={() => handleScrollDown()} />
         </PanelCard>
       ))}
     </Panel>

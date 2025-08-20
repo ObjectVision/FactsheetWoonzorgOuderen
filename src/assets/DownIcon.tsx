@@ -7,14 +7,14 @@ const Button = styled.button`
   border: none;
   padding: 1rem;
   cursor: pointer;
-  color: black;
+  color: grey;
   text-decoration: none;
 `;
 
-const DownIcon = ({ onClick }) => {
+const DownIcon = ({ className, onClick }) => {
   return (
-    <Button onClick={onClick}>
-      <i className="ri-arrow-down-wide-line"></i>
+    <Button className={className} onClick={onClick}>
+      <i className="ri-arrow-down-wide-line ri-3x"></i>
     </Button>
   );
 };

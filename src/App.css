@@ -6,41 +6,10 @@ position: relative;
 #central-map{
   width: 100%;
   height: 100vh;/*50vh;*/
-  box-shadow: var( --basic-container-shadow)
 }
 
 #map-area{
   width: 100%;
   height: 100vh;
-  box-shadow: var( --basic-container-shadow);
   z-index: 0;
 }
-
-/*#app-container{
-  width:100vw;
-  height:100vh;
-  display: grid;
-  grid-template-columns: 1fr 3fr;
-  color:black;
-}*/
-
-/*#nav-panel {
-  grid-column: 1/span 1;
-  padding: var(--basic-gap);
-}
-
-#factsheet{
-  grid-column: 2/span 1;
-  padding: var(--basic-gap);
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  overflow: scroll;
-
-}
-
-#central-map{
-  width: 100%;
-  height: 50vh;
-  box-shadow: var( --basic-container-shadow)
-}*/

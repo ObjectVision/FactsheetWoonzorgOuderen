@@ -2,7 +2,7 @@ import { useEffect, useState} from "react";
 import "./App.css";
 import Map from "./Map.tsx"
 import FeatureCards from './FeatureCards';
-import Controls from './Controls.tsx'
+import MapControlButtons from './Controls.tsx'
 import TreeviewControl from "./TreeviewControl.tsx";
 import TitleBox from './Title.tsx'
 import Treeview from './Treeview.tsx'
@@ -14,17 +14,12 @@ import layers_json from "./data/layers.json?url";
 import map_json from "./data/map.json?url";
 
 function App() {
-  const [currentNeighborhood, setCurrentNeighborhood] = useState<string>("Test wijk");
   const [selectedPolygons, setSelectedPolygons] = useState<GeoJSON.Feature[]>([]);
   const [showLayerControl, setshowLayerControl] = useState<boolean>(true);
   const [sourceJSON, setsourceJSON] = useState<JSON[]>();
   const [layerJSON, setlayerJSON] = useState<JSON[]>();
   const [mapJSON, setmapJSON] = useState<TreeViewItem[]>([{id: '', label: '', children: []}]);
   const [latestChangedLayer, setLatestChangedLayer] = useState<[boolean, TreeViewItem]|undefined>();
-
-  useEffect(() => {
-    console.log(currentNeighborhood);
-  }, [currentNeighborhood]);
 
   useEffect(() => {
     const fetchAppJsonFiles = async () => {
@@ -36,20 +31,13 @@ function App() {
     fetchAppJsonFiles();
   }, []);
 
-      /*<div id="app-container">
-      <NavPanel
-        currentNeighborhood={currentNeighborhood}
-        setCurrentNeighborhood={setCurrentNeighborhood}
-      />
-      <Factsheet currentNeighborhood={currentNeighborhood} />
-    </div>*/
   return (
     <div>
       <div id="details-area">
         <TitleBox/>
         <Treeview setLatestChangedLayer={setLatestChangedLayer} showLayerControl={showLayerControl} mapJSON={mapJSON}/>
         <TreeviewControl showLayerControl={showLayerControl} setShowLayerControl={setshowLayerControl}/>
-        <Controls/>
+        <MapControlButtons/>
         <FeatureCards selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons} />
       </div>
       
