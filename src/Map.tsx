@@ -1,29 +1,22 @@
 import { useEffect, useState, useRef, useCallback, type AnyActionArg } from "react";
-//import bag_panden from "./data/bag_pand_Limburg_uncompressed_3.arrow?url";
-//import bag_panden from "./data/bag_pand_NL_uncompressed.arrow?url";
+
+import wijken from "./data/cbs_wijken_limburg.json?url";
 import {MapboxOverlay} from '@deck.gl/mapbox';
 import {GeoJsonLayer} from '@deck.gl/layers';
-import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
-import * as arrow from "apache-arrow";
-import {RecordBatchReader, Table, tableFromIPC, tableFromArrays } from "apache-arrow";
-import maplibregl, { DoubleClickZoomHandler } from "maplibre-gl";
+import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import type {LayersList} from '@deck.gl/core';
-import {Map as ReactMapGl, Source, Layer} from 'react-map-gl/maplibre';
+import { NavigationControl, Map as ReactMapGl} from 'react-map-gl/maplibre';
 import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
-//import { ArrowLoader } from '@loaders.gl/arrow';
-import type {TreeViewItem} from './Treeview.tsx';
-import {getDeckLayers, layerIsInDeckLayers, addDeckLayer, removeDeckLayer, updateDeckLayer, addGeoArrowPolygonDeckLayer, addCogMaplibreLayer, layerIsInMaplibreLayers, removeMaplibreLayer} from "./layers/layers";
+import MapControlButtons from "./assets/Controls";
 
 maplibregl.addProtocol('cog', cogProtocol);
 
 interface ChildProps {
-  latestChangedLayer:[boolean, TreeViewItem]|undefined;
   sourceJSON: JSON[]|undefined;
   layerJSON: JSON[]|undefined;
-  selectedPolygons: GeoJSON.Feature[];
-  setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>;
+  selectedPolygons: maplibregl.MapGeoJSONFeature[];
+  setSelectedPolygons: React.Dispatch<React.SetStateAction<maplibregl.MapGeoJSONFeature[]>>;
 }
 
 type CustomPolygon = {
@@ -34,6 +27,8 @@ type CustomPolygon = {
     y: number;
   }[][][]; // matches [[[ {x,y}, ... ]]]
 };
+
+
 
 export function toGeoJSONFeature(input: CustomPolygon): GeoJSON.Feature<GeoJSON.Polygon> {
   // Convert from {x,y} to [x,y] pairs
@@ -57,7 +52,7 @@ export function toGeoJSONFeature(input: CustomPolygon): GeoJSON.Feature<GeoJSON.
   };
 }
 
-function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: ChildProps) {
+function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: ChildProps) {
   //const [table, setTable] = useState<Table>();
   const [mapReady, setMapReady] = useState(false);
   const [tableUrl, setTableUrl] = useState<URL>();
@@ -72,55 +67,15 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
     }
   }
 
+  // update selected polygon viewstate
   useEffect(() => {
-    if (!latestChangedLayer)
-      return;
-    
-    if (!sourceJSON)
-      return;
-
-    if (!layerJSON)
-      return;
-
-    const layerDef = getLayerOrSourceDef(latestChangedLayer[1]!.layer!, layerJSON);
-
-    if (!layerDef)
-      return;
-
-    switch (layerDef.type) {
-      case "geoarrow-polygon": { 
-        if (layerIsInDeckLayers(deck, layerDef.id)) {
-          removeDeckLayer(deck, layerDef.id);
-        } else {
-          addGeoArrowPolygonDeckLayer(deck, layerDef, setSelectedPolygons);
-        }
-        break; 
-      } 
-      case "cog": { 
-        if (layerIsInMaplibreLayers(map, layerDef.id)) {
-          removeMaplibreLayer(map, layerDef.id) 
-        } else {
-          const sourceDef = getLayerOrSourceDef(layerDef.props.source, sourceJSON);
-          addCogMaplibreLayer(map, sourceDef, layerDef);
-        }
-        break; 
-      } 
-      default: { 
-          // throw error or warning, unknown layer type
-          break; 
-      } 
+    for (let i = 0; i<selectedPolygons.length; i++) {
+      const polygon = selectedPolygons[i];
+      map.current!.setFeatureState({id:polygon!.id, source: "wijk-navigation-source"}, {'state-level':i});
     }
-  }, [latestChangedLayer]);
+    
+  }, selectedPolygons);
 
-  useEffect(() => {
-    if (!mapReady)
-      return;
-
-  }, [mapReady]);
-
-  useEffect(() => {
-    updateDeckLayer(deck, "selection-layer", {data:selectedPolygons});
-  }, [selectedPolygons]);
 
   const createSelectionLayer = useCallback(() => {
     return new GeoJsonLayer({
@@ -150,6 +105,9 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
     currentMap.boxZoom.disable();
     currentMap.setMaxPitch(0);
 
+    currentMap.addControl(new maplibregl.NavigationControl({showCompass:false}), 'top-right')
+    currentMap.addControl(new MapControlButtons(currentMap), "top-right");
+
     currentMap.addLayer({
       id: 'background-anchor',
       type: 'background',
@@ -166,29 +124,73 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
       layout: { visibility: 'none' }
     });
     
+    currentMap.addSource("wijk-navigation-source", {
+      type: 'geojson',
+      data: wijken,
+      generateId: true
+    });
+
+    currentMap.addLayer({
+      id: 'wijk-navigation-layer',
+      type: 'fill',
+      source: 'wijk-navigation-source',
+      paint: {//
+        'fill-color': [ //  // 67, 72, 120, 1 // 44, 137, 127, 1
+          'match',
+          ['feature-state', 'state-level'],
+           -1, 'rgba(237, 233, 157, 1)',
+            0, 'rgba(226, 64, 0, 1)',
+            1, 'rgba(67, 72, 120, 1)',
+            2, 'rgba(44, 137, 127, 1)',
+            'rgba(237, 233, 157, 1)' // default value if no match
+        ],
+
+        'fill-opacity': 0.5
+      }
+      
+    });
+
+    currentMap.on("click", "wijk-navigation-layer", (e)=>{
+      console.log(e, e.features);
+
+      const feature:maplibregl.MapGeoJSONFeature = e.features![0];
+      setSelectedPolygons(prev => {
+      if (!prev || prev.length===0) 
+        return [feature];
+      
+      const maxFeatures = 3;
+      let index = -1;
+      for (let i=0; i<prev.length; i++) {
+        const prevFeature = prev[i];
+        if (prevFeature.properties.WK_CODE === feature.properties!.WK_CODE) {
+          index = i;
+          break;
+        }
+      }
+
+      if (index !== -1) {
+        map.current!.setFeatureState({id:prev[index].properties.id, source: "wijk-navigation-source"}, {'state-level':-1});
+        return prev.filter((_, i) => i !== index);
+      }
+
+      const updated = [...prev, feature];
+      if (updated.length>maxFeatures) // handle neutral coloring of feature about to become unselected
+        map.current!.setFeatureState({id:updated.at(-1)!.id, source: "wijk-navigation-source"}, {'state-level':-1});
+
+      return updated.slice(-maxFeatures);
+      });      
+    });
+
     deck.current = new MapboxOverlay({ 
       layers: [],
     });
     map.current.addControl(deck.current);
 
-    addDeckLayer(deck, createSelectionLayer());
+    //addDeckLayer(deck, createSelectionLayer());
     setMapReady(true);
-
+ 
   }, []);
 
-/*
-        <Source
-          id="cogSource"
-          type="raster"
-          url="cog://http://[2a01:7c8:bb01:6ce:5054:ff:fef7:57c0]/raster/loopafstand_huisarts_cog.tif"
-        ></Source>
-
-        <Layer
-          id="cogLayer"
-          source= "cogSource"
-          type="raster"
-        />
-*/
   return (
       <div id ="central-map">
       <ReactMapGl
