@@ -73,13 +73,13 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
   }
 
   // update selected polygon viewstate
-  useEffect(() => {
+  /*useEffect(() => {
     for (let i = 0; i<selectedPolygons.length; i++) {
       const polygon = selectedPolygons[i];
       map.current!.setFeatureState({id:polygon!.id, source: "wijk-navigation-source"}, {'state-level':i});
     }
     
-  }, selectedPolygons);
+  }, selectedPolygons);*/
 
   /*useEffect(() => {
     if (!latestChangedLayer)
@@ -189,11 +189,11 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
         'fill-color': [ //  // 67, 72, 120, 1 // 44, 137, 127, 1
           'match',
           ['feature-state', 'state-level'],
-           -1, 'rgba(237, 233, 157, 1)',
             0, 'rgba(226, 64, 0, 1)',
             1, 'rgba(67, 72, 120, 1)',
             2, 'rgba(44, 137, 127, 1)',
-            'rgba(237, 233, 157, 1)' // default value if no match
+            3, 'rgba(237, 233, 157, 1)',
+            'rgba(237, 233, 157, 1)' // default
         ],
 
         'fill-opacity': 0.5
@@ -206,30 +206,36 @@ function Map({latestChangedLayer, sourceJSON, layerJSON, selectedPolygons, setSe
 
       const feature:maplibregl.MapGeoJSONFeature = e.features![0];
       setSelectedPolygons(prev => {
-      if (!prev || prev.length===0) 
-        return [feature];
       
-      const maxFeatures = 3;
-      let index = -1;
-      for (let i=0; i<prev.length; i++) {
-        const prevFeature = prev[i];
-        if (prevFeature.properties.WK_CODE === feature.properties!.WK_CODE) {
-          index = i;
-          break;
+        const maxFeatures = 3;
+        let index = -1;
+        for (let i=0; i<prev.length; i++) {
+          const prevFeature = prev[i];
+          if (prevFeature.properties.WK_CODE === feature.properties!.WK_CODE) {
+            index = i;
+            break;
+          }
         }
-      }
 
-      if (index !== -1) {
-        map.current!.setFeatureState({id:prev[index].properties.id, source: "wijk-navigation-source"}, {'state-level':-1});
-        return prev.filter((_, i) => i !== index);
-      }
+        let updated = []; 
+        if (index !== -1) {
+          map.current!.setFeatureState({id:prev[index].id, source: "wijk-navigation-source"}, {'state-level':3});
+          updated = prev.filter((_, i) => i !== index);
+        } else {
+          updated = [...prev, feature];
+        }
 
-      const updated = [...prev, feature];
-      if (updated.length>maxFeatures) // handle neutral coloring of feature about to become unselected
-        map.current!.setFeatureState({id:updated.at(-1)!.id, source: "wijk-navigation-source"}, {'state-level':-1});
+        // change coloring of updated features
+        if (updated.length >= maxFeatures) {
+          map.current!.setFeatureState({id:updated.at(0)!.id, source: "wijk-navigation-source"}, {'state-level':3});
+          updated = updated.slice(-maxFeatures);
+        }
+        for (let i=0; i<updated.length; i++) {
+          map.current!.setFeatureState({id:updated.at(i)!.id, source: "wijk-navigation-source"}, {'state-level':i});
+        }
 
-      return updated.slice(-maxFeatures);
-      });      
+        return updated;
+      });
     });
 
     deck.current = new MapboxOverlay({ 
