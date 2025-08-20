@@ -159,7 +159,7 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
             "positionFormat": "XY",
             "_normalize": false,
             "autoHighlight": true,
-            "highlightColor": [200, 100, 0, 100]
+            "highlightColor": [66, 165, 245, 50]
         }
     };
 
