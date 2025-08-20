@@ -172,7 +172,7 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
     });*/
 
     deck.current = new MapboxOverlay({ 
-      layers: [],
+      layers: []
     });
     map.current.addControl(deck.current);
 
@@ -184,9 +184,11 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
             "filled": false,
             "stroked": true,
             "opacity": 1.0,
+            "lineCapRounded":true,
+            "lineJointRounded":true,
             "getLineWidth": 42,
-            "lineWidthMinPixels": 1,
-            "getLineColor": [255, 0, 0, 255],
+            "lineWidthMinPixels": 2,
+            //"getLineColor": [255, 0, 0, 255],
             "pickable": false
         }
     };
@@ -231,7 +233,9 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
           latitude: 50.91319982389477,
           zoom: 10
         }}
-        mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+        mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+        //mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+        //mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
         onLoad={onMapLoad}
       >      
 

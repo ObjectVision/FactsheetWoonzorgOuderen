@@ -51,7 +51,15 @@ export async function addGeoJsonSelectionDeckLayer(deck: React.RefObject<any>, l
     data: {
       type: 'FeatureCollection',
       features: selectedPolygons,
-    }
+    },
+    getLineColor: (feature, {index}) => {
+      const colors = [
+        [228,26,28],     // red
+        [55,126,184],    // blue
+        [77,175,74],     // green
+      ];
+      return colors[index % colors.length];
+    },
   }));
 }
 
