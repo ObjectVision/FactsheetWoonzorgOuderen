@@ -7,6 +7,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { NavigationControl, Map as ReactMapGl} from 'react-map-gl/maplibre';
 import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
+import background_style from "./data/style.json?url";
 
 //import MapControlButtons from "./assets/Controls";
 import {addGeoArrowPolygonDeckLayer, addGeoJsonSelectionDeckLayer, updateDeckLayer} from "./layers/layers";
@@ -81,7 +82,7 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
 
   const onMapLoad = useCallback(() => {
     if (!map.current) return;
-    
+
     let currentMap = map.current.getMap();
     currentMap.doubleClickZoom.disable();
     currentMap.dragRotate.disable();
@@ -233,9 +234,9 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
           latitude: 50.91319982389477,
           zoom: 10
         }}
-        mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+        //mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         //mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
-        //mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+        mapStyle={background_style}//"https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
         onLoad={onMapLoad}
       >      
 
