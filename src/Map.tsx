@@ -90,6 +90,11 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
     currentMap.boxZoom.disable();
     currentMap.setMaxPitch(0);
 
+    currentMap.setMaxBounds([
+        [4.5, 50.5],
+        [7.5, 52]
+      ]);
+
     currentMap.addControl(new maplibregl.NavigationControl({showCompass:false}), 'top-right')
     //currentMap.addControl(new MapControlButtons(currentMap), "top-right");
 
@@ -108,69 +113,6 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
       type: 'background',
       layout: { visibility: 'none' }
     });
-    
-    /*currentMap.addSource("wijk-navigation-source", {
-      type: 'geojson',
-      data: wijken,
-      generateId: true
-    });*/
-
-    /*currentMap.addLayer({
-      id: 'wijk-navigation-layer',
-      type: 'fill',
-      source: 'wijk-navigation-source',
-      paint: {//
-        'fill-color': [ //  // 67, 72, 120, 1 // 44, 137, 127, 1
-          'match',
-          ['feature-state', 'state-level'],
-            0, 'rgba(226, 64, 0, 1)',
-            1, 'rgba(67, 72, 120, 1)',
-            2, 'rgba(44, 137, 127, 1)',
-            3, 'rgba(237, 233, 157, 1)',
-            'rgba(237, 233, 157, 1)' // default
-        ],
-
-        'fill-opacity': 0.5
-      }
-      
-    });
-
-    currentMap.on("click", "wijk-navigation-layer", (e)=>{
-      console.log(e, e.features);
-
-      const feature:maplibregl.MapGeoJSONFeature = e.features![0];
-      setSelectedPolygons(prev => {
-      
-        const maxFeatures = 3;
-        let index = -1;
-        for (let i=0; i<prev.length; i++) {
-          const prevFeature = prev[i];
-          if (prevFeature.properties.WK_CODE === feature.properties!.WK_CODE) {
-            index = i;
-            break;
-          }
-        }
-
-        let updated = []; 
-        if (index !== -1) {
-          map.current!.setFeatureState({id:prev[index].id, source: "wijk-navigation-source"}, {'state-level':3});
-          updated = prev.filter((_, i) => i !== index);
-        } else {
-          updated = [...prev, feature];
-        }
-
-        // change coloring of updated features
-        if (updated.length >= maxFeatures) {
-          map.current!.setFeatureState({id:updated.at(0)!.id, source: "wijk-navigation-source"}, {'state-level':3});
-          updated = updated.slice(-maxFeatures);
-        }
-        for (let i=0; i<updated.length; i++) {
-          map.current!.setFeatureState({id:updated.at(i)!.id, source: "wijk-navigation-source"}, {'state-level':i});
-        }
-
-        return updated;
-      });
-    });*/
 
     deck.current = new MapboxOverlay({ 
       layers: []
@@ -203,18 +145,21 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
             "beforeId": "foreground-anchor",
             "stroked": true,
             "filled": true,
-            "getLineColor": [255, 255, 255, 255],
-            "getFillColor": [72, 191, 145, 100],
+            "getLineColor": [70, 70, 70, 255],
+            "getFillColor": [72, 191, 145, 0],
             "getLineWidth": 5,
             "getPointRadius": 4,
+            "lineCapRounded":true,
+            "lineJointRounded":true,
             "getTextSize": 12,
-            "lineWidthMinPixels": 1,
+            "lineWidthMinPixels": 2,
             "extruded": false,
             "wireframe": false,
             "pickable": true,
             "positionFormat": "XY",
             "_normalize": false,
-            "autoHighlight": false
+            "autoHighlight": true,
+            "highlightColor": [200, 100, 0, 100]
         }
     };
 
@@ -230,9 +175,9 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
       <ReactMapGl
         ref={map}
         initialViewState={{
-          longitude: 5.844702066665236,
-          latitude: 50.91319982389477,
-          zoom: 10
+          longitude: 5.0844702066665236,
+          latitude: 52.5,
+          zoom: 5
         }}
         //mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         //mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
