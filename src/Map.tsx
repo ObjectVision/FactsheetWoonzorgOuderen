@@ -115,7 +115,17 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
     });
 
     deck.current = new MapboxOverlay({ 
-      layers: []
+      layers: [],
+      onHover: ({object}) => {
+        const canvas = currentMap.getCanvas();
+        if (object) {
+          canvas.style.cursor = 'pointer'; // hovering over layer
+        } else {
+          canvas.style.cursor = '';        // reset (MapLibre will handle default/grab)
+        }
+      },
+      onDrag: () => { currentMap.getCanvas().style.cursor = 'grabbing'; },
+      onDragEnd: () => { currentMap.getCanvas().style.cursor = ''; }
     });
     map.current.addControl(deck.current);
 
@@ -130,7 +140,7 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
             "lineCapRounded":true,
             "lineJointRounded":true,
             "getLineWidth": 42,
-            "lineWidthMinPixels": 2,
+            "lineWidthMinPixels": 3,
             //"getLineColor": [255, 0, 0, 255],
             "pickable": false
         }
