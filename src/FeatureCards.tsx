@@ -3,25 +3,31 @@ import styled from "styled-components";
 import DownIcon from "./assets/DownIcon";
 import { useEffect, useState } from "react";
 
-// Optional: define GeoJSON.Feature type if not available
-//type Feature = GeoJSON.Feature;
-
 const Panel = styled.div`
   width: 100vw;
   height: auto;
   position: fixed;
-  bottom: 0%;
+  bottom: 0;
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: stretch;
+  flex-direction: column;   /* stack TopPanel on top of cards */
   z-index: 1300;
   overflow-y: hidden;
 
   &.collapsed {
-    overflow-y: scroll;
     height: 90vh;
   }
+`;
+
+const TopPanel = styled.div`
+  border: rgba(255, 0, 0, 1) 1px solid;
+  width: 100%;
+  height: 40px;                /* fixed height handle */
+  display: flex;
+  align-items: center;         /* center vertically */
+  justify-content: center;     /* center horizontally */
+  background: rgba(255,255,255,0.9);
+  cursor: pointer;
+  z-index: 1400;
 `;
 
 const PanelCard = styled.div`
@@ -29,12 +35,9 @@ const PanelCard = styled.div`
   background-color: rgba(255, 255, 255, 0.8);
   padding: 1rem;
   flex-grow: 1;
-  border: rgb(128, 128, 128) 1px solid;
+  border: rgba(255, 255, 255, 1) 1px solid;
   border: none;
-
-  box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 1px, rgba(0, 0, 0, 0.07) 0px 2px 2px,
-    rgba(0, 0, 0, 0.07) 0px 4px 4px, rgba(0, 0, 0, 0.07) 0px 8px 8px,
-    rgba(0, 0, 0, 0.07) 0px 16px 16px;
+  position: relative;
 
   &#polygon-0 {
     h2,
@@ -70,6 +73,15 @@ const PanelCard = styled.div`
   }
 `;
 
+const CardsRow = styled.div`
+  display: flex;
+  flex-direction: row;          /* keep your cards side-by-side */
+  justify-content: space-around;
+  align-items: stretch;
+  flex: 1;                      /* take remaining space */
+  width: 100%;
+`;
+
 interface ChildProps {
   selectedPolygons: GeoJSON.Feature[];
   setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>;
@@ -97,20 +109,24 @@ export default function FeatureCards({
     }
   },[selectedPolygons])
 
-  return (
-    <Panel className={collapsed ? "collapsed" : ""}>
+return (
+  <Panel className={collapsed ? "collapsed" : ""}>
+    <TopPanel onClick={handleScrollDown}>
+      <DownIcon className="center" onClick={handleScrollDown} />
+    </TopPanel>
+
+    <CardsRow>
       {selectedPolygons.map((feature: GeoJSON.Feature, idx: number) => (
         <PanelCard key={idx} id={`polygon-${idx}`}>
           <CloseIcon className="top-right" onClick={() => handleRemove(idx)} />
           <div className="card-content">
-            <><h2>{feature.properties!.naam}</h2>
+            <h2>{feature.properties!.naam}</h2>
             <h3>{feature.properties!.WK_CODE}</h3>
-            </>
             <p>Meer info komt hier</p>
           </div>
-          <DownIcon className="center" onClick={() => handleScrollDown()} />
         </PanelCard>
       ))}
-    </Panel>
-  );
+    </CardsRow>
+  </Panel>
+);
 }
