@@ -111,9 +111,9 @@ export default function FeatureCards({
 
 return (
   <Panel className={collapsed ? "collapsed" : ""}>
-    <TopPanel onClick={handleScrollDown}>
+    {selectedPolygons.length!==0?<TopPanel onClick={handleScrollDown}>
       <DownIcon className="center" onClick={handleScrollDown} />
-    </TopPanel>
+    </TopPanel>:null}
 
     <CardsRow>
       {selectedPolygons.map((feature: GeoJSON.Feature, idx: number) => (
