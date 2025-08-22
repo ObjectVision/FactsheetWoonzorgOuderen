@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import {DonutChart} from "./visuals/donut"
 
 const TitleContainer = styled.div`
   position: fixed;
@@ -19,7 +20,8 @@ const TitleBox: React.FC<{ title?: string }> = ({
 }) => {
   return (
     <TitleContainer>
-      <h1><i className="ri-accessibility-fill"></i>
+      <h1>
+       <DonutChart/>
        {title} </h1>
     </TitleContainer>
   );
