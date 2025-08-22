@@ -23,7 +23,7 @@ function App() {
   return (
     <div>
       <div id="details-area">
-        <TitleBox/>
+        <TitleBox title={"Wonen & Zorg Limburg"}/>
         <FeatureCards selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons} />
       </div>
       

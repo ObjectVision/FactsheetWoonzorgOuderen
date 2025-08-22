@@ -14,17 +14,14 @@ const TitleContainer = styled.div`
   background-color: rgba(255,255,255,0.9);
 `;
 
+interface ChildProps {
+  title:string
+}
 
-const TitleBox: React.FC<{ title?: string }> = ({
-  title = "Wonen & Zorg Limburg",
-}) => {
+export default function TitleBox({title}:ChildProps) {
   return (
     <TitleContainer>
-      <h1>
-       <DonutChart/>
-       {title} </h1>
+      <h1>{title}</h1>
     </TitleContainer>
   );
-};
-
-export default TitleBox;
+}
