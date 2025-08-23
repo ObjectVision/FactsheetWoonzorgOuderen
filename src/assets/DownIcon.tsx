@@ -19,4 +19,12 @@ const DownIcon = ({ className, onClick }) => {
   );
 };
 
-export default DownIcon;
+const UpIcon = ({ className, onClick }) => {
+  return (
+    <Button className={className} onClick={onClick}>
+      <i className="ri-arrow-up-wide-line ri-3x"></i>
+    </Button>
+  );
+};
+
+export {DownIcon, UpIcon};

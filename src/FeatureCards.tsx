@@ -1,6 +1,6 @@
 import CloseIcon from "./assets/CloseIcon";
 import styled from "styled-components";
-import DownIcon from "./assets/DownIcon";
+import { DownIcon, UpIcon } from "./assets/DownIcon";
 import { useEffect, useState } from "react";
 
 const Panel = styled.div`
@@ -20,14 +20,15 @@ const Panel = styled.div`
 
 const TopPanel = styled.div`
   border: rgba(255, 0, 0, 1) 1px solid;
-  width: 100%;
-  height: 40px;                /* fixed height handle */
+  
+  
   display: flex;
-  align-items: center;         /* center vertically */
+  /*align-items: top;        */
   justify-content: center;     /* center horizontally */
   background: rgba(255,255,255,0.9);
   cursor: pointer;
   z-index: 1400;
+   border-radius: 0px;
 `;
 
 const PanelCard = styled.div`
@@ -75,10 +76,10 @@ const PanelCard = styled.div`
 
 const CardsRow = styled.div`
   display: flex;
-  flex-direction: row;          /* keep your cards side-by-side */
+  flex-direction: row;         
   justify-content: space-around;
   align-items: stretch;
-  flex: 1;                      /* take remaining space */
+  flex: 1;
   width: 100%;
 `;
 
@@ -112,7 +113,10 @@ export default function FeatureCards({
 return (
   <Panel className={collapsed ? "collapsed" : ""}>
     {selectedPolygons.length!==0?<TopPanel onClick={handleScrollDown}>
-      <DownIcon className="center" onClick={handleScrollDown} />
+      {collapsed?
+        <DownIcon className="center" onClick={handleScrollDown} />:
+        <UpIcon className="center" onClick={handleScrollDown} />
+      }
     </TopPanel>:null}
 
     <CardsRow>
