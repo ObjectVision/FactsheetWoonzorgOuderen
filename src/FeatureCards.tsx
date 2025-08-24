@@ -6,45 +6,52 @@ import { DownIcon, UpIcon } from "./assets/DownIcon";
 import { useEffect, useState } from "react";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import GridLayout, { type Layout } from "react-grid-layout";
+import RGL, {Responsive, WidthProvider, type Layout } from "react-grid-layout";
+const GridLayout = WidthProvider(RGL);
 
-const layout: Layout[] = [
-  { i: "1", x: 0, y: 0, w: 1, h: 1 },
-  { i: "2", x: 1, y: 0, w: 1, h: 1 },
-  { i: "3", x: 2, y: 0, w: 1, h: 1 },
-  { i: "4", x: 0, y: 1, w: 1, h: 1 },
-  { i: "5", x: 1, y: 1, w: 1, h: 1 },
-  { i: "6", x: 2, y: 1, w: 1, h: 1 },
-  // ...continue up to 30 items (3 cols × 10 rows)
-];
+function ResponsiveSquares() {
+  const [rowHeight, setRowHeight] = useState(0);
 
-const SquareGrid: React.FC = () => {
+  // calculate square size based on window width
+  useEffect(() => {
+    function handleResize() {
+      const colWidth = window.innerWidth / 3; // 3 columns
+      setRowHeight(colWidth); // row height = column width → square
+    }
+    handleResize(); // run once on mount
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // basic layout: 3 wide, 10 deep
+  const layout: Layout[] = Array.from({ length: 30 }).map((_, i) => ({
+    i: i.toString(),
+    x: i % 3,                  // column
+    y: Math.floor(i / 3),      // row
+    w: 1,                      // spans 1 col
+    h: 1                       // spans 1 row (rowHeight determines pixel height)
+  }));
+
   return (
-    <GridLayout
-      className="layout"
-      layout={layout}
-      cols={3}             // 3 wide
-      rowHeight={100}      // each row is 100px tall
-      width={300}          // total width: 3 × 100px = 300px
-      compactType={null}   // prevent auto reordering
-    >
-      {layout.map((item) => (
-        <div
-          key={item.i}
-          style={{
-            background: "#ddd",
-            border: "1px solid #999",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {item.i}
-        </div>
-      ))}
-    </GridLayout>
+    <div style={{ height: "100vh", width: "100vw" }}>
+      <GridLayout
+        className="layout"
+        layout={layout}
+        cols={3}
+        rowHeight={rowHeight}   // ensures squares
+        width={window.innerWidth}
+        compactType={"horizontal"}
+        preventCollision={true}
+      >
+        {layout.map((item) => (
+          <div key={item.i} style={{ background: "#69c", borderRadius: 8 }}>
+            <span>Item {item.i}</span>
+          </div>
+        ))}
+      </GridLayout>
+    </div>
   );
-};
+}
 
 const Panel = styled.div`
   width: 100vw;
@@ -52,10 +59,9 @@ const Panel = styled.div`
   position: fixed;
   bottom: 0;
   display: flex;
-  flex-direction: column;   /* stack TopPanel on top of cards */
+  flex-direction: column;
   z-index: 1300;
-  overflow-y: hidden;
-
+  overflow: hidden;
   &.collapsed {
     height: 90vh;
   }
@@ -67,7 +73,7 @@ const PanelHandle = styled.div`
   
   display: flex;
   /*align-items: top;        */
-  justify-content: center;     /* center horizontally */
+  justify-content: center;    
   background: rgba(255,255,255,0.9);
   cursor: pointer;
   z-index: 1400;
@@ -75,18 +81,20 @@ const PanelHandle = styled.div`
 `;
 
 const PanelContent = styled.div`
-  flex: 100;                        /* take remaining space inside Panel */
-  max-height: 100%;                 /* constrain to parent's height */
+  flex: 100;                      
+  max-height: 100%;                
   height: 100vh;
-  overflow-y: auto;                 /* scroll vertically when overflowing */
+  
   display: flex;
-  flex-direction: column;           /* stack children top-to-bottom */
-  align-items: center;              /* horizontally center grid */
-  justify-content: flex-start;      /* content starts at top */
+  flex-direction: column;          
+  align-items: center;             
+  justify-content: flex-start;      
   background: rgba(185, 61, 135, 0.9);
   cursor: pointer;
   z-index: 1400;
   border-radius: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
 `;
 
 const PanelCard = styled.div`
@@ -238,7 +246,7 @@ return (
 
     {collapsed?<PanelContent>
 
-      <SquareGrid/>
+      <ResponsiveSquares/>
     </PanelContent>
     :null}
 
