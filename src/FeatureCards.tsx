@@ -18,8 +18,8 @@ const Panel = styled.div`
   }
 `;
 
-const TopPanel = styled.div`
-  border: rgba(255, 0, 0, 1) 1px solid;
+const PanelHandle = styled.div`
+  /*border: rgba(255, 0, 0, 1) 1px solid;*/
   
   
   display: flex;
@@ -31,13 +31,28 @@ const TopPanel = styled.div`
    border-radius: 0px;
 `;
 
+const PanelContent = styled.div`
+  /*border: rgba(255, 0, 0, 1) 1px solid;*/
+  
+  flex-grow: 100;
+  overflow-y: auto;
+  display: flex;
+  align-items: top;        
+  justify-content: center;     /* center horizontally */
+  background: rgba(185, 61, 135, 0.9);
+  cursor: pointer;
+  z-index: 1400;
+   border-radius: 0px;
+`;
+
 const PanelCard = styled.div`
   width: auto;
+  height: 15vh;
   background-color: rgba(255, 255, 255, 0.8);
   padding: 1rem;
   flex-grow: 1;
-  border: rgba(255, 255, 255, 1) 1px solid;
-  border: none;
+  border: rgba(255, 75, 75, 1) 1px solid;
+  /*border: none;*/
   position: relative;
 
   &#polygon-0 {
@@ -45,20 +60,47 @@ const PanelCard = styled.div`
     h3 {
       color: #d95f02;
     }
-    border-bottom: #d95f02 15px solid;
   }
   &#polygon-1 {
     h2,
     h3 {
       color: #7570b3;
     }
-    border-bottom: #7570b3 15px solid;
   }
   &#polygon-2 {
     h2,
     h3 {
       color: #1b9e77;
     }
+  }
+
+  > .top-right {
+    position: relative;
+    float: right;
+  }
+
+  > .center{
+    position:relative;
+    width: 100%;
+    float:center;
+  }
+`;
+
+const PanelFooter = styled.div`
+  width: auto;
+  height: 0;
+  border: rgba(255, 75, 75, 1) 1px solid;
+  background-color: rgba(255, 255, 255, 0.5);
+  flex-grow: 1;
+  position: relative;
+
+  &#polygon-0 {
+    border-bottom: #d95f02 15px solid;
+  }
+  &#polygon-1 {
+    border-bottom: #7570b3 15px solid;
+  }
+  &#polygon-2 {
     border-bottom: #1b9e77 15px solid;
   }
 
@@ -81,6 +123,18 @@ const CardsRow = styled.div`
   align-items: stretch;
   flex: 1;
   width: 100%;
+`;
+
+const Button = styled.button`
+  height: auto;
+  width: auto;
+  background-color: rgba(0,0,0,0);
+  border: none;
+  padding: 0.3rem;
+  cursor: pointer;
+  color: grey;
+  text-decoration: none;
+  font-size: 1.8rem;
 `;
 
 interface ChildProps {
@@ -112,12 +166,18 @@ export default function FeatureCards({
 
 return (
   <Panel className={collapsed ? "collapsed" : ""}>
-    {selectedPolygons.length!==0?<TopPanel onClick={handleScrollDown}>
-      {collapsed?
-        <DownIcon className="center" onClick={handleScrollDown} />:
-        <UpIcon className="center" onClick={handleScrollDown} />
-      }
-    </TopPanel>:null}
+    { selectedPolygons.length!==0?
+      <PanelHandle onClick={handleScrollDown}>
+        {collapsed?
+          <Button onClick={handleScrollDown}>
+            <i className="ri-arrow-down-wide-line"></i>
+          </Button>:
+          <Button onClick={handleScrollDown}>
+            <i className="ri-arrow-up-wide-line"></i>
+          </Button>
+        }
+      </PanelHandle> : null
+    }
 
     <CardsRow>
       {selectedPolygons.map((feature: GeoJSON.Feature, idx: number) => (
@@ -129,6 +189,17 @@ return (
             <p>Meer info komt hier</p>
           </div>
         </PanelCard>
+      ))}
+    </CardsRow>
+
+    <PanelContent>
+
+      test
+    </PanelContent>
+
+    <CardsRow>
+      {selectedPolygons.map((feature: GeoJSON.Feature, idx: number) => (
+        <PanelFooter key={idx} id={`polygon-${idx}`}></PanelFooter>
       ))}
     </CardsRow>
   </Panel>
