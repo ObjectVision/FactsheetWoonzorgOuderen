@@ -1,7 +1,50 @@
+
+import { Component } from 'react';
 import CloseIcon from "./assets/CloseIcon";
 import styled from "styled-components";
 import { DownIcon, UpIcon } from "./assets/DownIcon";
 import { useEffect, useState } from "react";
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
+import GridLayout, { type Layout } from "react-grid-layout";
+
+const layout: Layout[] = [
+  { i: "1", x: 0, y: 0, w: 1, h: 1 },
+  { i: "2", x: 1, y: 0, w: 1, h: 1 },
+  { i: "3", x: 2, y: 0, w: 1, h: 1 },
+  { i: "4", x: 0, y: 1, w: 1, h: 1 },
+  { i: "5", x: 1, y: 1, w: 1, h: 1 },
+  { i: "6", x: 2, y: 1, w: 1, h: 1 },
+  // ...continue up to 30 items (3 cols × 10 rows)
+];
+
+const SquareGrid: React.FC = () => {
+  return (
+    <GridLayout
+      className="layout"
+      layout={layout}
+      cols={3}             // 3 wide
+      rowHeight={100}      // each row is 100px tall
+      width={300}          // total width: 3 × 100px = 300px
+      compactType={null}   // prevent auto reordering
+    >
+      {layout.map((item) => (
+        <div
+          key={item.i}
+          style={{
+            background: "#ddd",
+            border: "1px solid #999",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {item.i}
+        </div>
+      ))}
+    </GridLayout>
+  );
+};
 
 const Panel = styled.div`
   width: 100vw;
@@ -32,17 +75,18 @@ const PanelHandle = styled.div`
 `;
 
 const PanelContent = styled.div`
-  /*border: rgba(255, 0, 0, 1) 1px solid;*/
-  
-  flex-grow: 100;
-  overflow-y: auto;
+  flex: 100;                        /* take remaining space inside Panel */
+  max-height: 100%;                 /* constrain to parent's height */
+  height: 100vh;
+  overflow-y: auto;                 /* scroll vertically when overflowing */
   display: flex;
-  align-items: top;        
-  justify-content: center;     /* center horizontally */
+  flex-direction: column;           /* stack children top-to-bottom */
+  align-items: center;              /* horizontally center grid */
+  justify-content: flex-start;      /* content starts at top */
   background: rgba(185, 61, 135, 0.9);
   cursor: pointer;
   z-index: 1400;
-   border-radius: 0px;
+  border-radius: 0;
 `;
 
 const PanelCard = styled.div`
@@ -192,10 +236,11 @@ return (
       ))}
     </CardsRow>
 
-    <PanelContent>
+    {collapsed?<PanelContent>
 
-      test
+      <SquareGrid/>
     </PanelContent>
+    :null}
 
     <CardsRow>
       {selectedPolygons.map((feature: GeoJSON.Feature, idx: number) => (
