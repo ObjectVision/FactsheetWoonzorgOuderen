@@ -90,10 +90,10 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
     currentMap.boxZoom.disable();
     currentMap.setMaxPitch(0);
 
-    currentMap.setMaxBounds([
+    /*currentMap.setMaxBounds([
         [4.5, 50.5],
         [7.5, 52]
-      ]);
+      ]);*/
 
     currentMap.addControl(new maplibregl.NavigationControl({showCompass:false}), 'top-right')
     //currentMap.addControl(new MapControlButtons(currentMap), "top-right");
@@ -185,9 +185,9 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
       <ReactMapGl
         ref={map}
         initialViewState={{
-          longitude: 5.0844702066665236,
-          latitude: 52.5,
-          zoom: 5
+          longitude: 5.894449675538817,
+          latitude: 51.31,
+          zoom: 8.9
         }}
         //mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         //mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"

@@ -58,12 +58,14 @@ const Panel = styled.div`
   height: auto;
   position: fixed;
   bottom: 0;
+  max-height: 500px;
   display: flex;
   flex-direction: column;
   z-index: 1300;
   overflow: hidden;
+  transition: max-height 0.7s ease;
   &.collapsed {
-    height: 90vh;
+    max-height: 75vh;
   }
 `;
 
@@ -89,7 +91,7 @@ const PanelContent = styled.div`
   flex-direction: column;          
   align-items: center;             
   justify-content: flex-start;      
-  background: rgba(185, 61, 135, 0.9);
+  /*background: rgba(185, 61, 135, 0.9);*/
   cursor: pointer;
   z-index: 1400;
   border-radius: 0;
