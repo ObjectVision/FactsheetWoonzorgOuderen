@@ -1,57 +1,10 @@
 
-import { Component } from 'react';
 import CloseIcon from "./assets/CloseIcon";
 import styled from "styled-components";
-import { DownIcon, UpIcon } from "./assets/DownIcon";
 import { useEffect, useState } from "react";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import RGL, {Responsive, WidthProvider, type Layout } from "react-grid-layout";
-const GridLayout = WidthProvider(RGL);
 
-function ResponsiveSquares() {
-  const [rowHeight, setRowHeight] = useState(0);
-
-  // calculate square size based on window width
-  useEffect(() => {
-    function handleResize() {
-      const colWidth = window.innerWidth / 3; // 3 columns
-      setRowHeight(colWidth); // row height = column width → square
-    }
-    handleResize(); // run once on mount
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // basic layout: 3 wide, 10 deep
-  const layout: Layout[] = Array.from({ length: 30 }).map((_, i) => ({
-    i: i.toString(),
-    x: i % 3,                  // column
-    y: Math.floor(i / 3),      // row
-    w: 1,                      // spans 1 col
-    h: 1                       // spans 1 row (rowHeight determines pixel height)
-  }));
-
-  return (
-    <div style={{ height: "100vh", width: "100vw" }}>
-      <GridLayout
-        className="layout"
-        layout={layout}
-        cols={3}
-        rowHeight={rowHeight}   // ensures squares
-        width={window.innerWidth}
-        compactType={"horizontal"}
-        preventCollision={true}
-      >
-        {layout.map((item) => (
-          <div key={item.i} style={{ background: "#69c", borderRadius: 8 }}>
-            <span>Item {item.i}</span>
-          </div>
-        ))}
-      </GridLayout>
-    </div>
-  );
-}
 
 const Panel = styled.div`
   width: 100vw;
@@ -61,18 +14,18 @@ const Panel = styled.div`
   max-height: 500px;
   display: flex;
   flex-direction: column;
+  justify-content: stretch;
   z-index: 1300;
   overflow: hidden;
-  transition: max-height 0.7s ease;
+  transition: all 0.7s ease;
   &.collapsed {
+    height: auto;
     max-height: 75vh;
   }
 `;
 
 const PanelHandle = styled.div`
   /*border: rgba(255, 0, 0, 1) 1px solid;*/
-  
-  
   display: flex;
   /*align-items: top;        */
   justify-content: center;    
@@ -82,28 +35,41 @@ const PanelHandle = styled.div`
    border-radius: 0px;
 `;
 
-const PanelContent = styled.div`
-  flex: 100;                      
-  max-height: 100%;                
-  height: 100vh;
-  
+
+const Cards = styled.div`
   display: flex;
-  flex-direction: column;          
-  align-items: center;             
-  justify-content: flex-start;      
-  /*background: rgba(185, 61, 135, 0.9);*/
-  cursor: pointer;
-  z-index: 1400;
-  border-radius: 0;
-  overflow-x: hidden;
-  overflow-y: scroll;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex: 1;
+  width: 100%;
 `;
 
-const PanelCard = styled.div`
+const Card = styled.div`
+  display:flex;
+  flex-direction: column;
+  width: auto;
+  align-items: stretch;
+  justify-content: flex-start;
+  flex-grow: 0.0001;
+  width: 0%;
+  
+  animation: show 600ms 100ms cubic-bezier(0.38, 0.97, 0.56, 0.76) forwards;
+  @keyframes show {
+  100% {
+    transform: none;
+    flex:1;
+  }
+}
+`
+
+const CardTopInfo = styled.div`
+  flex-grow: 0.0001;
   width: auto;
   height: 15vh;
   background-color: rgba(255, 255, 255, 0.8);
   padding: 1rem;
+  transition: all 1.7s ease;
   flex-grow: 1;
   border: rgba(255, 75, 75, 1) 1px solid;
   /*border: none;*/
@@ -140,12 +106,28 @@ const PanelCard = styled.div`
   }
 `;
 
-const PanelFooter = styled.div`
+const CardContent = styled.div`
+  width: auto;
+  align-items: stretch;
+  flex: 1;
+  width: 100%;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: rgba(185, 61, 135, 0.9);
+  z-index: 1400;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  border: white solid 5px;
+`;
+
+const CardFooter = styled.div`
   width: auto;
   height: 0;
   border: rgba(255, 75, 75, 1) 1px solid;
   background-color: rgba(255, 255, 255, 0.5);
-  flex-grow: 1;
   position: relative;
 
   &#polygon-0 {
@@ -168,15 +150,16 @@ const PanelFooter = styled.div`
     width: 100%;
     float:center;
   }
-`;
 
-const CardsRow = styled.div`
-  display: flex;
-  flex-direction: row;         
-  justify-content: space-around;
-  align-items: stretch;
-  flex: 1;
-  width: 100%;
+  flex-grow: 0.0001;
+  width: 0%;
+
+  animation: show 600ms 100ms cubic-bezier(0.38, 0.97, 0.56, 0.76) forwards;
+  @keyframes show {
+  100% {
+    transform: none;
+    flex:1;
+  }
 `;
 
 const Button = styled.button`
@@ -211,52 +194,56 @@ export default function FeatureCards({
     setCollapsed(!collapsed);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     // remove container when no selected polygons
-    if(selectedPolygons.length <=0){
+    if (selectedPolygons.length <= 0) {
       setCollapsed(false)
     }
-  },[selectedPolygons])
+  }, [selectedPolygons])
 
-return (
-  <Panel className={collapsed ? "collapsed" : ""}>
-    { selectedPolygons.length!==0?
-      <PanelHandle onClick={handleScrollDown}>
-        {collapsed?
+  return (
+    <Panel className={collapsed ? "collapsed" : ""}>
+      {selectedPolygons.length !== 0 ?
+        <PanelHandle onClick={handleScrollDown}>
           <Button onClick={handleScrollDown}>
-            <i className="ri-arrow-down-wide-line"></i>
-          </Button>:
-          <Button onClick={handleScrollDown}>
-            <i className="ri-arrow-up-wide-line"></i>
+            <i className={collapsed ? "ri-arrow-up-wide-line" : "ri-arrow-down-wide-line"}></i>
           </Button>
-        }
-      </PanelHandle> : null
-    }
+        </PanelHandle> : null
+      }
+      <Cards>
+        {selectedPolygons.map((feature: GeoJSON.Feature, idx: number) => (
+          <Card key={`card-${idx}`} >
+            <CardTopInfo key={`card-info-${idx}`} id={`polygon-${idx}`}>
+              <CloseIcon className="top-right" onClick={() => handleRemove(idx)} />
+              <div className="card-content">
+                <h2>{feature.properties!.naam}</h2>
+                <h3>{feature.properties!.WK_CODE}</h3>
+                <p>Meer info komt hier</p>
+              </div>
+            </CardTopInfo>
 
-    <CardsRow>
-      {selectedPolygons.map((feature: GeoJSON.Feature, idx: number) => (
-        <PanelCard key={idx} id={`polygon-${idx}`}>
-          <CloseIcon className="top-right" onClick={() => handleRemove(idx)} />
-          <div className="card-content">
-            <h2>{feature.properties!.naam}</h2>
-            <h3>{feature.properties!.WK_CODE}</h3>
-            <p>Meer info komt hier</p>
-          </div>
-        </PanelCard>
-      ))}
-    </CardsRow>
+          </Card>
+        ))}
+      </Cards>
+      <Cards>
+        {collapsed ?
+          <> {
+            selectedPolygons.map((feature: GeoJSON.Feature, idx: number) => (
+              <CardContent key={`card-content-${idx}`}>
+                <h1>Test</h1>
+                <h1>Test 2</h1>
+                <h1>Test 3</h1>
+              </CardContent>))
+          }</>
+          : null}
+      </Cards>
+      <Cards>
 
-    {collapsed?<PanelContent>
+        {selectedPolygons.map((feature: GeoJSON.Feature, idx: number) => (
+          <CardFooter key={idx} id={`polygon-${idx}`}></CardFooter>
+        ))}
+      </Cards>
 
-      <ResponsiveSquares/>
-    </PanelContent>
-    :null}
-
-    <CardsRow>
-      {selectedPolygons.map((feature: GeoJSON.Feature, idx: number) => (
-        <PanelFooter key={idx} id={`polygon-${idx}`}></PanelFooter>
-      ))}
-    </CardsRow>
-  </Panel>
-);
+    </Panel>
+  );
 }
