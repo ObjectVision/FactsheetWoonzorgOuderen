@@ -4,62 +4,6 @@ import CloseIcon from "./assets/CloseIcon";
 import styled from "styled-components";
 import { DownIcon, UpIcon } from "./assets/DownIcon";
 import { useEffect, useState } from "react";
-import { Responsive, WidthProvider } from "react-grid-layout";
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
-
-
-const ResponsiveGridLayout = WidthProvider(Responsive);
-
-const MyResponsiveGrid = () => {
-  // Define grid items
-  const items = Array.from({ length: 8 }, (_, i) => i + 1);
-
-  // Function to generate layout for a given number of columns
-  const generateLayout = (cols:any) =>
-    items.map((item, index) => {
-      const x = index % cols;
-      const y = Math.floor(index / cols);
-      return { i: item.toString(), x, y, w: 1, h: 1 };
-    });
-
-  // Breakpoints for responsiveness
-  const breakpoints = { lg: 2000, md: 1200, sm: 800, xs: 400 };
-  const cols = { lg: 4, md: 3, sm: 2, xs: 1 }; // dynamically adjust columns
-
-  return (
-    <ResponsiveGridLayout
-      className="layout"
-      layouts={{
-        lg: generateLayout(cols.lg),
-        md: generateLayout(cols.md),
-        sm: generateLayout(cols.sm),
-        xs: generateLayout(cols.xs),
-      }}
-      breakpoints={breakpoints}
-      cols={cols}
-      rowHeight={500}       // each grid item 500px tall
-      width={1200}          // initial width (ignored when responsive)
-      isResizable={false}
-      isDraggable={false}
-    >
-      {items.map((item) => (
-        <div
-          key={item.toString()}
-          style={{
-            border: "1px solid #333",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor:"rba(255,255,255,0.9)"
-          }}
-        >
-          Item {item}
-        </div>
-      ))}
-    </ResponsiveGridLayout>
-  );
-};
 
 const Panel = styled.div`
   width: 100vw;
@@ -94,7 +38,13 @@ const PanelContent = styled.div`
   flex: 100;                      
   max-height: 100%;                
   height: 100vh;
-  
+  display: grid;
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
   /*display: flex;*/
   /*flex-direction: column;          */
   /*align-items: center;             */
@@ -108,7 +58,7 @@ const PanelContent = styled.div`
   overflow-y: scroll;
 `;
 
-const PanelCard = styled.div`
+const HeaderCard = styled.div`
   width: auto;
   height: 15vh;
   background-color: rgba(255, 255, 255, 0.8);
@@ -188,6 +138,14 @@ const CardsRow = styled.div`
   width: 100%;
 `;
 
+const Card = styled.div`
+  font-size: 22px;
+  background-color: dodgerblue;
+  color: white;
+  padding: 1rem;
+  height: 4rem;
+`;
+
 const Button = styled.button`
   height: auto;
   width: auto;
@@ -244,20 +202,30 @@ return (
 
     <CardsRow>
       {selectedPolygons.map((feature: GeoJSON.Feature, idx: number) => (
-        <PanelCard key={idx} id={`polygon-${idx}`}>
+        <HeaderCard key={idx} id={`polygon-${idx}`}>
           <CloseIcon className="top-right" onClick={() => handleRemove(idx)} />
           <div className="card-content">
             <h2>{feature.properties!.naam}</h2>
             <h3>{feature.properties!.WK_CODE}</h3>
             <p>Meer info komt hier</p>
           </div>
-        </PanelCard>
+        </HeaderCard>
       ))}
     </CardsRow>
 
     {collapsed?<PanelContent>
-
-      <MyResponsiveGrid/>
+      <Card>ONE</Card>
+      <Card>TWO</Card>
+      <Card>THREE</Card>
+      <Card>FOUR</Card>
+      <Card>FIVE</Card>
+      <Card>SIX</Card>
+      <Card>SEVEN</Card>
+      <Card>EIGHT</Card>
+      <Card>NINE</Card>
+      <Card>TEN</Card>
+      <Card>ELEVEN</Card>
+      <Card>TWELVE</Card>
     </PanelContent>
     :null}
 
