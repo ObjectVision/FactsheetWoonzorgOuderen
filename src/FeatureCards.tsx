@@ -19,6 +19,13 @@ const Panel = styled.div`
   &.collapsed {
     max-height: 75vh;
   }
+  ::-webkit-scrollbar {
+      width: 0;  
+      background: transparent;  
+  }
+  ::-webkit-scrollbar-thumb {
+      background: #FF0000;
+  }
 `;
 
 const PanelHandle = styled.div`
@@ -39,6 +46,9 @@ const PanelContent = styled.div`
   max-height: 100%;                
   height: 100vh;
   display: grid;
+  gap: 0.1rem;
+  
+
   @media (min-width: 600px) {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -140,10 +150,11 @@ const CardsRow = styled.div`
 
 const Card = styled.div`
   font-size: 22px;
-  background-color: dodgerblue;
-  color: white;
-  padding: 1rem;
-  height: 4rem;
+  background-color: rgba(255, 255, 255, 0.5);
+  color: black;
+  border: rgba(255, 75, 75, 1) 1px solid;
+  border-radius: 5px;
+
 `;
 
 const Button = styled.button`
