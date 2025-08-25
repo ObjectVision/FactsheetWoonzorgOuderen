@@ -4,54 +4,62 @@ import CloseIcon from "./assets/CloseIcon";
 import styled from "styled-components";
 import { DownIcon, UpIcon } from "./assets/DownIcon";
 import { useEffect, useState } from "react";
+import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import RGL, {Responsive, WidthProvider, type Layout } from "react-grid-layout";
-const GridLayout = WidthProvider(RGL);
 
-function ResponsiveSquares() {
-  const [rowHeight, setRowHeight] = useState(0);
 
-  // calculate square size based on window width
-  useEffect(() => {
-    function handleResize() {
-      const colWidth = window.innerWidth / 3; // 3 columns
-      setRowHeight(colWidth); // row height = column width → square
-    }
-    handleResize(); // run once on mount
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
-  // basic layout: 3 wide, 10 deep
-  const layout: Layout[] = Array.from({ length: 30 }).map((_, i) => ({
-    i: i.toString(),
-    x: i % 3,                  // column
-    y: Math.floor(i / 3),      // row
-    w: 1,                      // spans 1 col
-    h: 1                       // spans 1 row (rowHeight determines pixel height)
-  }));
+const MyResponsiveGrid = () => {
+  // Define grid items
+  const items = Array.from({ length: 8 }, (_, i) => i + 1);
+
+  // Function to generate layout for a given number of columns
+  const generateLayout = (cols:any) =>
+    items.map((item, index) => {
+      const x = index % cols;
+      const y = Math.floor(index / cols);
+      return { i: item.toString(), x, y, w: 1, h: 1 };
+    });
+
+  // Breakpoints for responsiveness
+  const breakpoints = { lg: 2000, md: 1200, sm: 800, xs: 400 };
+  const cols = { lg: 4, md: 3, sm: 2, xs: 1 }; // dynamically adjust columns
 
   return (
-    <div style={{ height: "100vh", width: "100vw" }}>
-      <GridLayout
-        className="layout"
-        layout={layout}
-        cols={3}
-        rowHeight={rowHeight}   // ensures squares
-        width={window.innerWidth}
-        compactType={"horizontal"}
-        preventCollision={true}
-      >
-        {layout.map((item) => (
-          <div key={item.i} style={{ background: "#69c", borderRadius: 8 }}>
-            <span>Item {item.i}</span>
-          </div>
-        ))}
-      </GridLayout>
-    </div>
+    <ResponsiveGridLayout
+      className="layout"
+      layouts={{
+        lg: generateLayout(cols.lg),
+        md: generateLayout(cols.md),
+        sm: generateLayout(cols.sm),
+        xs: generateLayout(cols.xs),
+      }}
+      breakpoints={breakpoints}
+      cols={cols}
+      rowHeight={500}       // each grid item 500px tall
+      width={1200}          // initial width (ignored when responsive)
+      isResizable={false}
+      isDraggable={false}
+    >
+      {items.map((item) => (
+        <div
+          key={item.toString()}
+          style={{
+            border: "1px solid #333",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor:"rba(255,255,255,0.9)"
+          }}
+        >
+          Item {item}
+        </div>
+      ))}
+    </ResponsiveGridLayout>
   );
-}
+};
 
 const Panel = styled.div`
   width: 100vw;
@@ -79,7 +87,7 @@ const PanelHandle = styled.div`
   background: rgba(255,255,255,0.9);
   cursor: pointer;
   z-index: 1400;
-   border-radius: 0px;
+  border-radius: 0px;
 `;
 
 const PanelContent = styled.div`
@@ -87,11 +95,12 @@ const PanelContent = styled.div`
   max-height: 100%;                
   height: 100vh;
   
-  display: flex;
-  flex-direction: column;          
-  align-items: center;             
-  justify-content: flex-start;      
+  /*display: flex;*/
+  /*flex-direction: column;          */
+  /*align-items: center;             */
+  /*justify-content: flex-start;      */
   /*background: rgba(185, 61, 135, 0.9);*/
+  background: rgba(255,255,255,0.9);
   cursor: pointer;
   z-index: 1400;
   border-radius: 0;
@@ -105,7 +114,7 @@ const PanelCard = styled.div`
   background-color: rgba(255, 255, 255, 0.8);
   padding: 1rem;
   flex-grow: 1;
-  border: rgba(255, 75, 75, 1) 1px solid;
+  /*border: rgba(255, 75, 75, 1) 1px solid;*/
   /*border: none;*/
   position: relative;
 
@@ -248,7 +257,7 @@ return (
 
     {collapsed?<PanelContent>
 
-      <ResponsiveSquares/>
+      <MyResponsiveGrid/>
     </PanelContent>
     :null}
 
