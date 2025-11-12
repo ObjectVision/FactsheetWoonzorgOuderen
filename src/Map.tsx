@@ -47,7 +47,7 @@ export function toGeoJSONFeature(input: CustomPolygon): GeoJSON.Feature<GeoJSON.
     },
     properties: {
       naam: input.naam,
-      WK_CODE: input.WK_CODE
+      GMCODE: input.GMCODE
     }
   };
 }

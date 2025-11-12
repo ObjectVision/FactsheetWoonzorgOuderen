@@ -217,7 +217,7 @@ return (
           <CloseIcon className="top-right" onClick={() => handleRemove(idx)} />
           <div className="card-content">
             <h2>{feature.properties!.naam}</h2>
-            <h3>{feature.properties!.WK_CODE}</h3>
+            <h3>{feature.properties!.GMCODE}</h3>
             <p>Meer info komt hier</p>
           </div>
         </HeaderCard>
