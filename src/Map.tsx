@@ -9,6 +9,7 @@ import type {MapRef} from 'react-map-gl/maplibre';
 import {cogProtocol} from '@geomatico/maplibre-cog-protocol';
 import background_style from "./data/style.json?url";
 
+
 //import MapControlButtons from "./assets/Controls";
 import {addGeoArrowPolygonDeckLayer, addGeoJsonSelectionDeckLayer, updateDeckLayer} from "./layers/layers";
 
@@ -23,7 +24,7 @@ interface ChildProps {
 
 type CustomPolygon = {
   naam: string;
-  WK_CODE: string;
+  statcode: string;
   geometry: {
     x: number;
     y: number;
@@ -47,7 +48,7 @@ export function toGeoJSONFeature(input: CustomPolygon): GeoJSON.Feature<GeoJSON.
     },
     properties: {
       naam: input.naam,
-      GMCODE: input.GMCODE
+      statcode: input.statcode
     }
   };
 }
@@ -182,12 +183,13 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
 
   return (
       <div id ="central-map">
+
       <ReactMapGl
         ref={map}
         initialViewState={{
           longitude: 5.894449675538817,
-          latitude: 51.31,
-          zoom: 8.9
+          latitude: 52.00,
+          zoom: 7
         }}
         //mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         //mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"

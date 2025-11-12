@@ -104,7 +104,7 @@ export async function addGeoArrowPolygonDeckLayer(deck: React.RefObject<any>, la
               if (!prev || prev.length===0)
                 return [jsonFeature];
               const maxFeatures = 3;
-              const index = prev.findIndex((f) => f!.properties!.GMCODE === jsonFeature.properties!.GMCODE);
+              const index = prev.findIndex((f) => f!.properties!.statcode === jsonFeature.properties!.statcode);
               if (index !== -1)
                 return prev.filter((_, i) => i !== index);
     

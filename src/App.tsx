@@ -3,6 +3,7 @@ import "./App.css";
 import Map from "./Map.tsx"
 import FeatureCards from './FeatureCards';
 import TitleBox from './Title.tsx'
+import RegionToggleButtons from './RegionToggleButtons.tsx'
 import sources_json from "./data/sources.json?url";
 import layers_json from "./data/layers.json?url";
 
@@ -23,11 +24,16 @@ function App() {
   return (
     <div>
       <div id="details-area">
-        <TitleBox title={"Wonen & Zorg Limburg"}/>
+        
         <FeatureCards selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons} />
       </div>
       
+      <div id="details-area">
+        <RegionToggleButtons />
+      </div>
+      
       <div id="map-area">
+
         <Map  sourceJSON={sourceJSON} layerJSON={layerJSON} selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons}/>
       </div>
     </div>
