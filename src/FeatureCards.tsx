@@ -225,7 +225,7 @@ return (
     </CardsRow>
 
     {collapsed?<PanelContent>
-      <Card>ONE</Card>
+      <Card>ONES</Card>
       <Card>TWO</Card>
       <Card>THREE</Card>
       <Card>FOUR</Card>
