@@ -155,7 +155,7 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
             "beforeId": "foreground-anchor",
             "stroked": true,
             "filled": true,
-            "getLineColor": [70, 70, 70, 255],
+            "getLineColor": [255, 255, 255, 255],
             "getFillColor": [72, 191, 145, 0],
             "getLineWidth": 5,
             "getPointRadius": 4,

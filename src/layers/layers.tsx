@@ -3,6 +3,7 @@ import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
 import { toGeoJSONFeature } from "../Map"
 import type {LayersList} from '@deck.gl/core';
 //import wijken_arrow from "../data/cbs_wijken_limburg.arrow?url";
+import gemeente_arrow from "../data/gemeente.arrows?url";
 import loopafstand_huisarts_cog from "../data/loopafstand_huisarts_cog.tif?url";
 import {GeoJsonLayer} from '@deck.gl/layers';
 
@@ -64,13 +65,37 @@ export async function addGeoJsonSelectionDeckLayer(deck: React.RefObject<any>, l
 }
 
 export async function addGeoArrowPolygonDeckLayer(deck: React.RefObject<any>, layerDef:any, setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>) {
-      const data = await fetch(layerDef.url);
+      const data = await fetch(gemeente_arrow);//layerDef.url);
       const buffer = await data.arrayBuffer();
       const table = arrow.tableFromIPC(buffer);
       addDeckLayer(deck, new GeoArrowPolygonLayer({
           ...layerDef.props,
           id: layerDef.id,
           data: table!,
+          getFillColor: ({ index, data }) => {
+            const recordBatch = data.data;
+            const row = recordBatch.get(index);
+            const area = row!['area'];
+
+            const transparancy = 255;
+            if (area >= 0 && area < 7794600) {
+              return [219, 237, 255, transparancy];
+            } else if (area >= 7794600 && area < 117096313) {
+              return [197, 226, 255, transparancy]	;
+            } else if (area >= 117096313 && area < 176707446) {
+              return [175, 215, 255, transparancy];
+            } else if (area >= 176707446 && area < 252950912){
+              return [153, 204, 255, transparancy]	;
+            } else if (area >= 252950912 && area < 252950912){
+              return [133, 193, 255, transparancy]	;
+            } else if (area >= 252950912 && area < 317127512){
+              return [112, 182, 255, transparancy];
+            } else if (area >= 317127512 && area < 466029092){
+              return [92, 171, 255, transparancy];
+            } else if (area >= 466029092){
+              return [71, 160, 255, transparancy];
+            }
+          },
           onClick: ({ object }: any) => {
             if (!object) 
               return;
