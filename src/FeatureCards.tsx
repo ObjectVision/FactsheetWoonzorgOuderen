@@ -4,6 +4,7 @@ import CloseIcon from "./assets/CloseIcon";
 import styled from "styled-components";
 import { DownIcon, UpIcon } from "./assets/DownIcon";
 import { useEffect, useState } from "react";
+import {MiniChart} from "./MiniChart";
 
 const Panel = styled.div`
   width: 100vw;
@@ -196,6 +197,21 @@ export default function FeatureCards({
     }
   },[selectedPolygons])
 
+  const chartTypes = [
+    "bar",
+    "line",
+    "area",
+    "bar",
+    "line",
+    "area",
+    "bar",
+    "line",
+    "area",
+    "bar",
+    "line",
+    "area",
+  ];
+
 return (
   <Panel className={collapsed ? "collapsed" : ""}>
     { selectedPolygons.length!==0?
@@ -225,18 +241,11 @@ return (
     </CardsRow>
 
     {collapsed?<PanelContent>
-      <Card>ONES</Card>
-      <Card>TWO</Card>
-      <Card>THREE</Card>
-      <Card>FOUR</Card>
-      <Card>FIVE</Card>
-      <Card>SIX</Card>
-      <Card>SEVEN</Card>
-      <Card>EIGHT</Card>
-      <Card>NINE</Card>
-      <Card>TEN</Card>
-      <Card>ELEVEN</Card>
-      <Card>TWELVE</Card>
+      {chartTypes.map((type, i) => (
+        <Card key={i}>
+          <MiniChart type={type} />
+        </Card>
+      ))}
     </PanelContent>
     :null}
 
