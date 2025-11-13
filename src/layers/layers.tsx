@@ -4,6 +4,7 @@ import { toGeoJSONFeature } from "../Map"
 import type {LayersList} from '@deck.gl/core';
 //import wijken_arrow from "../data/cbs_wijken_limburg.arrow?url";
 import gemeente_arrow from "../data/gemeente.arrows?url";
+import provincie_arrow from "../data/provincie.arrows?url";
 import loopafstand_huisarts_cog from "../data/loopafstand_huisarts_cog.tif?url";
 import {GeoJsonLayer} from '@deck.gl/layers';
 
@@ -64,13 +65,33 @@ export async function addGeoJsonSelectionDeckLayer(deck: React.RefObject<any>, l
   }));
 }
 
+export async function addGeoArrowRegionLayer(deck: React.RefObject<any>, region_id:any, layerDef:any, setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>) {
+  const gemeenten_layer_is_active = layerIsInDeckLayers(deck, "Gemeenten");
+  const provincies_layer_is_active = layerIsInDeckLayers(deck, "Provincies");
+  if (region_id === "Gemeenten") {
+    addGeoArrowPolygonDeckLayer(deck, layerDef, setSelectedPolygons);
+    if (provincies_layer_is_active) {
+      removeDeckLayer(deck, "Provincies");
+    }
+  }
+
+  if (region_id === "Provincies") {
+    addGeoArrowProvinciesPolygonDeckLayer(deck, layerDef, setSelectedPolygons);
+    if (gemeenten_layer_is_active) {
+     removeDeckLayer(deck, "Gemeenten");
+    }
+  }
+
+  return;
+}
+
 export async function addGeoArrowPolygonDeckLayer(deck: React.RefObject<any>, layerDef:any, setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>) {
       const data = await fetch(gemeente_arrow);//layerDef.url);
       const buffer = await data.arrayBuffer();
       const table = arrow.tableFromIPC(buffer);
       addDeckLayer(deck, new GeoArrowPolygonLayer({
           ...layerDef.props,
-          id: layerDef.id,
+          id: "Gemeenten",//layerDef.id,
           data: table!,
           getFillColor: ({ index, data }) => {
             const recordBatch = data.data;
@@ -93,6 +114,63 @@ export async function addGeoArrowPolygonDeckLayer(deck: React.RefObject<any>, la
             } else if (area >= 317127512 && area < 466029092){
               return [92, 171, 255, transparancy];
             } else if (area >= 466029092){
+              return [71, 160, 255, transparancy];
+            }
+          },
+          onClick: ({ object }: any) => {
+            if (!object) 
+              return;
+            const jsonFeature = toGeoJSONFeature(JSON.parse(JSON.stringify(object.toJSON())));
+            setSelectedPolygons(prev => {
+              if (!prev || prev.length===0)
+                return [jsonFeature];
+              const maxFeatures = 3;
+              const index = prev.findIndex((f) => f!.properties!.statcode === jsonFeature.properties!.statcode);
+              if (index !== -1)
+                return prev.filter((_, i) => i !== index);
+    
+              const updated = [...prev, jsonFeature];
+              return updated.slice(-maxFeatures);
+            });
+
+          },
+          earcutWorkerUrl: new URL(
+            "https://cdn.jsdelivr.net/npm/@geoarrow/geoarrow-js@0.3.0/dist/earcut-worker.min.js",
+          ),
+        }))
+      return;
+}
+
+// temp for demo:
+export async function addGeoArrowProvinciesPolygonDeckLayer(deck: React.RefObject<any>, layerDef:any, setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>) {
+      const data = await fetch(provincie_arrow);
+      const buffer = await data.arrayBuffer();
+      const table = arrow.tableFromIPC(buffer);
+      addDeckLayer(deck, new GeoArrowPolygonLayer({
+          ...layerDef.props,
+          id: "Provincies",
+          data: table!,
+          getFillColor: ({ index, data }) => {
+            const recordBatch = data.data;
+            const row = recordBatch.get(index);
+            const area = row!['area'];
+
+            const transparancy = 255;
+            if (area >= 0 && area < 1466592512) {
+              return [219, 237, 255, transparancy];
+            } else if (area >= 1466592512 && area < 1839555456) {
+              return [197, 226, 255, transparancy]	;
+            } else if (area >= 1839555456 && area < 2209956864) {
+              return [175, 215, 255, transparancy];
+            } else if (area >= 2209956864 && area < 2387706112){
+              return [153, 204, 255, transparancy]	;
+            } else if (area >= 2387706112 && area < 2680419328){
+              return [133, 193, 255, transparancy]	;
+            } else if (area >= 2680419328 && area < 3408122368){
+              return [112, 182, 255, transparancy];
+            } else if (area >= 3408122368 && area < 5053700608){
+              return [92, 171, 255, transparancy];
+            } else if (area >= 5053700608){
               return [71, 160, 255, transparancy];
             }
           },

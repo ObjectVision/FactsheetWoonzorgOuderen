@@ -11,7 +11,7 @@ import background_style from "./data/style.json?url";
 
 
 //import MapControlButtons from "./assets/Controls";
-import {addGeoArrowPolygonDeckLayer, addGeoJsonSelectionDeckLayer, updateDeckLayer} from "./layers/layers";
+import {addGeoArrowPolygonDeckLayer, addGeoJsonSelectionDeckLayer, updateDeckLayer, addGeoArrowRegionLayer} from "./layers/layers";
 
 maplibregl.addProtocol('cog', cogProtocol);
 
@@ -20,6 +20,7 @@ interface ChildProps {
   layerJSON: JSON[]|undefined;
   selectedPolygons: GeoJSON.Feature[];
   setSelectedPolygons: React.Dispatch<React.SetStateAction<GeoJSON.Feature[]>>;
+  activeRegions:any;
 }
 
 type CustomPolygon = {
@@ -53,7 +54,7 @@ export function toGeoJSONFeature(input: CustomPolygon): GeoJSON.Feature<GeoJSON.
   };
 }
 
-function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: ChildProps) {
+function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons, activeRegions }: ChildProps) {
   //const [table, setTable] = useState<Table>();
   const [mapReady, setMapReady] = useState(false);
   const [tableUrl, setTableUrl] = useState<URL>();
@@ -72,6 +73,35 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
     updateDeckLayer(deck, "selection-layer", {data:selectedPolygons});
   }, [selectedPolygons]);
 
+  useEffect(() => {
+    const navigationLayerDef = {
+        "id": "arrow-layer",
+        "type": "geoarrow-polygon",
+        "url": "https://factsheetwoonzorgouderen.online/vector/cbs_wijken_limburg.arrow",
+        "props":{
+            "beforeId": "foreground-anchor",
+            "stroked": true,
+            "filled": true,
+            "getLineColor": [255, 255, 255, 255],
+            "getFillColor": [72, 191, 145, 0],
+            "getLineWidth": 5,
+            "getPointRadius": 4,
+            "lineCapRounded":true,
+            "lineJointRounded":true,
+            "getTextSize": 12,
+            "lineWidthMinPixels": 1,
+            "extruded": false,
+            "wireframe": false,
+            "pickable": true,
+            "positionFormat": "XY",
+            "_normalize": false,
+            "autoHighlight": true,
+            "highlightColor": [66, 165, 245, 50]
+        }
+    };
+
+    addGeoArrowRegionLayer(deck, activeRegions, navigationLayerDef, setSelectedPolygons);
+  }, [activeRegions]);
   // update selected polygon viewstate
   /*useEffect(() => {
     for (let i = 0; i<selectedPolygons.length; i++) {

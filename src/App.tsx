@@ -9,6 +9,7 @@ import layers_json from "./data/layers.json?url";
 
 function App() {
   const [selectedPolygons, setSelectedPolygons] = useState<GeoJSON.Feature[]>([]);
+  const [activeRegions, setActiveRegions] = useState("Gemeenten");
   const [sourceJSON, setsourceJSON] = useState<JSON[]>();
   const [layerJSON, setlayerJSON] = useState<JSON[]>();
 
@@ -29,12 +30,12 @@ function App() {
       </div>
       
       <div id="details-area">
-        <RegionToggleButtons />
+        <RegionToggleButtons activeRegions={activeRegions} setActiveRegions={setActiveRegions}/>
       </div>
-      
+
       <div id="map-area">
 
-        <Map  sourceJSON={sourceJSON} layerJSON={layerJSON} selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons}/>
+        <Map  sourceJSON={sourceJSON} layerJSON={layerJSON} selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons} activeRegions={activeRegions}/>
       </div>
     </div>
   );

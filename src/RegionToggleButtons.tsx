@@ -19,8 +19,8 @@ const Wrapper = styled.div`
 
 const Button = styled.button`
   background-color: ${(props) =>
-    props.active ? "rgb(25, 86, 175)" : "transparent"};
-  color: ${(props) => (props.active ? "white" : "rgb(60, 60, 60)")};
+    props.activeRegions ? "rgb(25, 86, 175)" : "transparent"};
+  color: ${(props) => (props.activeRegions ? "white" : "rgb(60, 60, 60)")};
   border: none;
   padding: 0.5rem 1.4rem;
   border-radius: 9999px; /* pill shape */
@@ -32,24 +32,32 @@ const Button = styled.button`
 
   &:hover {
     background-color: ${(props) =>
-      props.active ? "rgb(22, 70, 145)" : "rgba(220, 220, 220, 1)"};
+      props.activeRegions ? "rgb(22, 70, 145)" : "rgba(220, 220, 220, 1)"};
   }
 `;
 
-export default function RegionToggleButtons() {
-  const [active, setActive] = useState("Gemeenten");
+interface ChildProps {
+  activeRegions: any;
+  setActiveRegions: any;
+}
+
+export default function RegionToggleButtons({
+  activeRegions,
+  setActiveRegions,
+}: ChildProps) {
+  //const [active, setActive] = useState("Gemeenten");
 
   return (
     <Wrapper>
       <Button
-        active={active === "Gemeenten"}
-        onClick={() => setActive("Gemeenten")}
+        activeRegions={activeRegions === "Gemeenten"}
+        onClick={() => setActiveRegions("Gemeenten")}
       >
         Gemeenten
       </Button>
       <Button
-        active={active === "Provincies"}
-        onClick={() => setActive("Provincies")}
+        activeRegions={activeRegions === "Provincies"}
+        onClick={() => setActiveRegions("Provincies")}
       >
         Provincies
       </Button>
