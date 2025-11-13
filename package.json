@@ -32,6 +32,7 @@
     "react-dom": "^19.1.0",
     "react-grid-layout": "^1.5.2",
     "react-map-gl": "^8.0.4",
+    "react-router-dom": "^7.9.5",
     "remixicon": "^4.6.0",
     "styled-components": "^6.1.19"
   },
