@@ -153,7 +153,7 @@ const Card = styled.div`
   font-size: 22px;
   background-color: rgba(255, 255, 255, 0.5);
   color: black;
-  border: rgba(255, 75, 75, 1) 1px solid;
+  border: rgba(223, 223, 223, 1) 1px solid;
   border-radius: 5px;
 
 `;
