@@ -7,6 +7,17 @@ import { AppSidebar } from './components/app-sidebar.tsx'
 import sources_json from "./data/sources.json?url";
 import layers_json from "./data/layers.json?url";
 import { SidebarProvider } from "@/components/ui/sidebar"
+import Page from "./dashboard.tsx" 
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
 function App() {
   const [selectedPolygons, setSelectedPolygons] = useState<GeoJSON.Feature[]>([]);
   const [sourceJSON, setsourceJSON] = useState<JSON[]>();
@@ -24,19 +35,10 @@ function App() {
   return (
     <div>
       <div id="details-area">
-        <TitleBox title={"Wonen & Zorg Limburg"}/>
         <FeatureCards selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons} />
       </div>
 
-      <div>
-        <SidebarProvider>
-          <AppSidebar/>
-        </SidebarProvider>
-      </div>
-      
-      <div id="map-area">
-        <Map  sourceJSON={sourceJSON} layerJSON={layerJSON} selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons}/>
-      </div>
+      <Page sourceJSON={sourceJSON} layerJSON={layerJSON} selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons}/>
     </div>
   );
 }

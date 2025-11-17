@@ -95,7 +95,7 @@ function Map({ sourceJSON, layerJSON, selectedPolygons, setSelectedPolygons }: C
         [7.5, 52]
       ]);*/
 
-    currentMap.addControl(new maplibregl.NavigationControl({showCompass:false}), 'top-right')
+    //currentMap.addControl(new maplibregl.NavigationControl({showCompass:false}), 'top-right')
     //currentMap.addControl(new MapControlButtons(currentMap), "top-right");
 
     currentMap.addLayer({
