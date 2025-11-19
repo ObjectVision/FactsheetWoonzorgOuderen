@@ -2,11 +2,10 @@ import { useEffect, useState} from "react";
 import "./App.css";
 import Map from "./Map.tsx"
 import FeatureCards from './FeatureCards';
-import TitleBox from './Title.tsx'
-import { AppSidebar } from './components/app-sidebar.tsx'
 import sources_json from "./data/sources.json?url";
 import layers_json from "./data/layers.json?url";
-import { SidebarProvider } from "@/components/ui/sidebar"
+import DataHeader from "./components/header.tsx"
+
 function App() {
   const [selectedPolygons, setSelectedPolygons] = useState<GeoJSON.Feature[]>([]);
   const [sourceJSON, setsourceJSON] = useState<JSON[]>();
@@ -24,17 +23,13 @@ function App() {
   return (
     <div>
       <div id="details-area">
-        <TitleBox title={"Wonen & Zorg Limburg"}/>
         <FeatureCards selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons} />
       </div>
 
-      <div>
-        <SidebarProvider>
-          <AppSidebar/>
-        </SidebarProvider>
-      </div>
-      
       <div id="map-area">
+        <div id="details-area" className="w-full flex justify-center">
+          <DataHeader/>
+        </div>
         <Map  sourceJSON={sourceJSON} layerJSON={layerJSON} selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons}/>
       </div>
     </div>
