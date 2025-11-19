@@ -6,11 +6,11 @@ return (
     <div className="flex items-center text-base font-medium bg-white px-4 py-2 shadow-sm">
       <Select>
         <SelectTrigger className="text-orange-600 font-semibold bg-transparent border-none shadow-none">
-          <SelectValue placeholder="BAT (Nultrede) woningen" 
+          <SelectValue placeholder="BAT scores" 
           className="[&[data-placeholder]]:text-orange-600 text-orange-600"/>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="geschikte-woningvoorraad-bat">BAT (Nultrede) woningen</SelectItem>
+          <SelectItem value="geschikte-woningvoorraad-bat">BAT scores</SelectItem>
         </SelectContent>
       </Select>
 
