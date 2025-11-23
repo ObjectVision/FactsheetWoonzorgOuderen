@@ -1,7 +1,7 @@
 
 #details-area {
 z-index: 1000;
-position: absolute;
+position: relative;
 }
 
 #central-map{
