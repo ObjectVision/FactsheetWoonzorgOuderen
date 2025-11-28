@@ -5,6 +5,8 @@ import FeatureCards from './FeatureCards';
 import sources_json from "./data/sources.json?url";
 import layers_json from "./data/layers.json?url";
 import DataHeader from "./components/header.tsx"
+import {ScrollArea} from "./components/ui/scroll-area.tsx"
+import { Separator } from "@/components/ui/separator"
 
 function App() {
   const [selectedPolygons, setSelectedPolygons] = useState<GeoJSON.Feature[]>([]);
@@ -19,6 +21,11 @@ function App() {
 
     fetchAppJsonFiles();
   }, []);
+/*
+        <div id="details-area">
+          <Navbar/>
+        </div>
+*/
 
   return (
     <div>
@@ -26,10 +33,13 @@ function App() {
         <FeatureCards selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons} />
       </div>
 
+      <ScrollArea className="text-opacity-20
+      h-200 w-100 rounded-md border 
+      absolute top-4 left-2 z-50 bg-white/85 shadow-lg
+      ">
+       
+      </ScrollArea>
       <div id="map-area">
-        <div id="details-area" className="w-full flex justify-center">
-          <DataHeader/>
-        </div>
         <Map  sourceJSON={sourceJSON} layerJSON={layerJSON} selectedPolygons={selectedPolygons} setSelectedPolygons={setSelectedPolygons}/>
       </div>
     </div>
