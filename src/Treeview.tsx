@@ -62,7 +62,7 @@ export function buildItems(root: JsonNode): Record<string, FlatItem> {
 
 const items = buildItems(jsonTree);
 
-export const FoodTree: React.FC = () => {
+export const Treeview: React.FC = () => {
   const tree = useTree<FlatItem>({
     rootItemId: "root",
     initialState: {
