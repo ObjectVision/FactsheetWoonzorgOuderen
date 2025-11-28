@@ -4,9 +4,7 @@ import Map from "./Map.tsx"
 import FeatureCards from './FeatureCards';
 import sources_json from "./data/sources.json?url";
 import layers_json from "./data/layers.json?url";
-import DataHeader from "./components/header.tsx"
 import {ScrollArea} from "./components/ui/scroll-area.tsx"
-import { Separator } from "@/components/ui/separator"
 import { Treeview } from "@/Treeview.tsx";
 
 function App() {
