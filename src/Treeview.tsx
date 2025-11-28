@@ -7,6 +7,8 @@ import {
   syncDataLoaderFeature,
 } from "@headless-tree/core";
 import { useTree, AssistiveTreeDescription } from "@headless-tree/react";
+import { Checkbox } from "@/components/ui/checkbox"
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 export type JsonNode = {
   id: string;
@@ -83,7 +85,7 @@ export const FoodTree: React.FC = () => {
   });
 
   return (
-    <div>
+    <div className="mt-2 ml-2">
       {tree.getItems().map((item) => {
         const meta = item.getItemMeta();
         const isFolder = item.isFolder();
@@ -125,20 +127,23 @@ export const FoodTree: React.FC = () => {
                     marginRight: 4,
                   }}
                 >
-                  {item.isExpanded() ? "▾" : "▸"}
+              {item.isExpanded() ? (
+                <ChevronDown size={16} />
+              ) : (
+                <ChevronRight size={16} />
+              )}
                 </button>
               ) : (
                 <span style={{ width: 16, marginRight: 4 }} />
               )}
 
               <span>{item.getItemName()}</span>
+
+              
             </div>
             {!isFolder && (
-              <input
-                type="checkbox"
-                {...item.getCheckboxProps()}
-                style={{ marginLeft: 4, marginRight: 4 }}
-              />
+              <Checkbox className="border-gray-400 mr-2"/>
+
             )}
           </div>
         );
@@ -148,3 +153,11 @@ export const FoodTree: React.FC = () => {
     </div>
   );
 };
+
+/*
+              <input
+                type="checkbox"
+                {...item.getCheckboxProps()}
+                style={{ marginLeft: 4, marginRight: 4 }}
+              />
+*/
