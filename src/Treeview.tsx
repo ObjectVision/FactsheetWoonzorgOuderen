@@ -1,163 +1,266 @@
-// components/FoodTree.tsx
-import React from "react";
+import * as React from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import {
-  checkboxesFeature,
-  hotkeysCoreFeature,
-  selectionFeature,
-  syncDataLoaderFeature,
-} from "@headless-tree/core";
-import { useTree, AssistiveTreeDescription } from "@headless-tree/react";
-import { Checkbox } from "@/components/ui/checkbox"
-import { ChevronDown, ChevronRight } from "lucide-react";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { ChevronDown, ChevronRight, Info } from "lucide-react";
 
-export type JsonNode = {
+type TreeNode = {
   id: string;
   name: string;
-  children?: JsonNode[];
+  icon?: string;
+  layer?: string;
+  children?: TreeNode[];
 };
 
-export const jsonTree: JsonNode = {
-  id: "root",
-  name: "All food",
-  children: [
-    {
-      id: "fruit",
-      name: "Fruit",
-      children: [
-        { id: "apple", name: "Apple" },
-        { id: "banana", name: "Banana" },
-        { id: "orange", name: "Orange" },
-      ],
-    },
-    {
-      id: "vegetables",
-      name: "Vegetables",
-      children: [
-        { id: "carrot", name: "Carrot" },
-        { id: "broccoli", name: "Broccoli" },
-      ],
-    },
-  ],
+type TreeviewProps = {
+  mapJSON?: any;
 };
 
-export type FlatItem = {
-  name: string;
-  children?: string[];
+type TreeNodeItemProps = {
+  node: TreeNode;
+  depth: number;
+  selectedId: string | null;
+  setSelectedId: (id: string | null) => void;
+  openIds: Set<string>;
+  toggleOpen: (id: string) => void;
+  openInfo: (node: TreeNode) => void;
+  checkedIds: Set<string>;
+  onLeafCheck: (id: string, checked: boolean) => void;
 };
 
-export function buildItems(root: JsonNode): Record<string, FlatItem> {
-  const items: Record<string, FlatItem> = {};
+function TreeNodeItem({
+  node,
+  depth,
+  selectedId,
+  setSelectedId,
+  openIds,
+  toggleOpen,
+  openInfo,
+  checkedIds,
+  onLeafCheck,
+}: TreeNodeItemProps) {
+  const isLeaf = !node.children || node.children.length === 0;
+  const isOpen = openIds.has(node.id);
+  const isSelected = selectedId === node.id;
 
-  function visit(node: JsonNode) {
-    items[node.id] = {
-      name: node.name,
-      children: node.children?.map((c) => c.id),
-    };
-    node.children?.forEach(visit);
-  }
+  const levelIndent = depth * 16;
+  const rowInnerPaddingLeft = 8;
 
-  visit(root);
-  return items;
-}
-
-const items = buildItems(jsonTree);
-
-export const Treeview: React.FC = () => {
-  const tree = useTree<FlatItem>({
-    rootItemId: "root",
-    initialState: {
-      expandedItems: ["fruit"],
-      checkedItems: ["banana"],
-    },
-    getItemName: (item) => item.getItemData().name,
-    isItemFolder: (item) => !!item.getItemData().children,
-    dataLoader: {
-      getItem: (itemId) => items[itemId],
-      getChildren: (itemId) => items[itemId].children ?? [],
-    },
-    indent: 20,
-    features: [
-      syncDataLoaderFeature,
-      selectionFeature,
-      checkboxesFeature,
-      hotkeysCoreFeature,
-    ],
-  });
+  const isChecked = isLeaf && checkedIds.has(node.id);
 
   return (
-    <div className="mt-2 ml-2">
-      {tree.getItems().map((item) => {
-        const meta = item.getItemMeta();
-        const isFolder = item.isFolder();
-        const indent = 4 + meta.level * (tree.getConfig().indent ?? 20);
+    <div className="w-full">
+      <div style={{ marginLeft: levelIndent }}>
+        <div
+          className={[
+            "flex items-center justify-between px-2 py-1 text-sm rounded-sm",
+            "hover:bg-muted cursor-pointer",
+            isSelected ? "bg-blue-50 text-blue-900" : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+          style={{ paddingLeft: rowInnerPaddingLeft }}
+          onClick={() => {
+            if (isLeaf) {
+              const newChecked = !isChecked;
+              onLeafCheck(node.id, newChecked);
+              setSelectedId(node.id);
+            } else {
+              setSelectedId(node.id);
+              toggleOpen(node.id);
+            }
+          }}
+        >
+          <div className="flex items-center gap-2">
+            {isLeaf ? (
+              <span className="inline-flex h-4 w-4 items-center justify-center" />
+            ) : (
+              <button
+                type="button"
+                className="inline-flex h-4 w-4 items-center justify-center rounded-sm hover:bg-muted/70 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleOpen(node.id);
+                }}
+              >
+                {isOpen ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </button>
+            )}
 
-        const rowProps = item.getProps();
+            <span>{node.name}</span>
+          </div>
 
-        return (
-          <div
-            key={item.getId()}
-            {...rowProps}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              cursor: "default",
-              background: item.isSelected() ? "#e5f2ff" : "transparent",
-            }}
-          >
+          {isLeaf && (
             <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                flex: 1,
-                paddingLeft: indent,
-              }}
+              className="flex items-center gap-1 pr-2"
+              onClick={(e) => e.stopPropagation()}
             >
-              {isFolder ? (
-                <button
+              {isSelected && (
+                <Button
                   type="button"
+                  size="icon"
+                  variant="outline"
+                  className="h-6 w-6 cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation();
-                    item.isExpanded() ? item.collapse() : item.expand();
-                  }}
-                  style={{
-                    width: 16,
-                    border: "none",
-                    background: "transparent",
-                    padding: 0,
-                    marginRight: 4,
+                    openInfo(node);
                   }}
                 >
-              {item.isExpanded() ? (
-                <ChevronDown size={16} />
-              ) : (
-                <ChevronRight size={16} />
-              )}
-                </button>
-              ) : (
-                <span style={{ width: 16, marginRight: 4 }} />
+                  <Info className="h-3 w-3" />
+                </Button>
               )}
 
-              <span>{item.getItemName()}</span>
-
-              
+              <Checkbox
+                className="border-gray-400 cursor-pointer"
+                checked={isChecked}
+                onCheckedChange={(val) => {
+                  const checked = val === true;
+                  onLeafCheck(node.id, checked);
+                  if (checked) {
+                    setSelectedId(node.id);
+                  }
+                }}
+              />
             </div>
-            {!isFolder && (
-              <Checkbox className="border-gray-400 mr-2"/>
+          )}
+        </div>
+      </div>
 
-            )}
-          </div>
-        );
-      })}
-
-      <AssistiveTreeDescription tree={tree} />
+      {!isLeaf && isOpen && node.children && node.children.length > 0 && (
+        <div className="mt-1">
+          {node.children.map((child) => (
+            <TreeNodeItem
+              key={child.id}
+              node={child}
+              depth={depth + 1}
+              selectedId={selectedId}
+              setSelectedId={setSelectedId}
+              openIds={openIds}
+              toggleOpen={toggleOpen}
+              openInfo={openInfo}
+              checkedIds={checkedIds}
+              onLeafCheck={onLeafCheck}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
-};
+}
 
-/*
-              <input
-                type="checkbox"
-                {...item.getCheckboxProps()}
-                style={{ marginLeft: 4, marginRight: 4 }}
-              />
-*/
+export default function Treeview({ mapJSON }: TreeviewProps) {
+  const data: TreeNode[] = Array.isArray(mapJSON) ? (mapJSON as TreeNode[]) : [];
+
+  const [selectedId, setSelectedId] = React.useState<string | null>(null);
+  const [openIds, setOpenIds] = React.useState<Set<string>>(
+    () => new Set<string>()
+  );
+
+  const [checkedIds, setCheckedIds] = React.useState<Set<string>>(
+    () => new Set<string>()
+  );
+
+  const [infoNode, setInfoNode] = React.useState<TreeNode | null>(null);
+  const [infoOpen, setInfoOpen] = React.useState(false);
+
+  const toggleOpen = React.useCallback((id: string) => {
+    setOpenIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const openInfo = React.useCallback((node: TreeNode) => {
+    setInfoNode(node);
+    setInfoOpen(true);
+  }, []);
+
+  const handleLeafCheck = React.useCallback((id: string, checked: boolean) => {
+    setCheckedIds((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  }, []);
+
+  if (!data || data.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      <div className="mt-2 ml-2 w-full">
+        {data.map((node) => (
+          <TreeNodeItem
+            key={node.id}
+            node={node}
+            depth={0}
+            selectedId={selectedId}
+            setSelectedId={setSelectedId}
+            openIds={openIds}
+            toggleOpen={toggleOpen}
+            openInfo={openInfo}
+            checkedIds={checkedIds}
+            onLeafCheck={handleLeafCheck}
+          />
+        ))}
+      </div>
+
+      <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{infoNode?.name ?? "Metainfo"}</DialogTitle>
+            <DialogDescription>
+              Detailinformatie over het geselecteerde element.
+            </DialogDescription>
+          </DialogHeader>
+
+          {infoNode && (
+            <div className="mt-2 space-y-1 text-sm">
+              <div>
+                <span className="font-mono text-[11px] opacity-70 mr-1">
+                  id:
+                </span>
+                {infoNode.id}
+              </div>
+              {infoNode.icon && (
+                <div>
+                  <span className="font-mono text-[11px] opacity-70 mr-1">
+                    icon:
+                  </span>
+                  {infoNode.icon}
+                </div>
+              )}
+              {infoNode.layer && (
+                <div>
+                  <span className="font-mono text-[11px] opacity-70 mr-1">
+                    layer:
+                  </span>
+                  {infoNode.layer}
+                </div>
+              )}
+              {!infoNode.icon && !infoNode.layer && (
+                <div className="italic text-muted-foreground">
+                  Geen extra metadata beschikbaar.
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}

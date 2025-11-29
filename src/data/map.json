@@ -1,26 +1,45 @@
 [
-
+  {
+    "id": "100001",
+    "name": "Geografie",
+    "children": [
       {
-        "id": "100001",
-        "label": "Gebiedsindelingen",
-        "children": [
-          {
-                "id":"111001",
-                "label": "Wijk",
-                "icon": "Test",
-                "layer": "arrow-layer"
-          }
-        ]
-      },
-      {
-        "id": "200001",
-        "label": "Voorzieningen",
-        "children": [
-          {
-                "id":"211001",
-                "label": "Loopafstand huisarts",
-                "layer": "cog-layer"
-          }
-        ]
+            "id":"111001",
+            "name": "WGS84",
+            "children": [
+              {
+                    "id":"1110011",
+                    "name": "Wijk",
+                    "icon": "Test",
+                    "isradio": true,
+                    "layer": "arrow-layer"
+              }
+    ]
       }
     ]
+  },
+  {
+    "id": "200001",
+    "name": "Gebiedsindelingen",
+    "children": [
+      {
+            "id":"211001",
+            "name": "Wijk",
+            "icon": "Test",
+            "isradio": true,
+            "layer": "arrow-layer"
+      }
+    ]
+  },
+  {
+    "id": "300001",
+    "name": "Voorzieningen",
+    "children": [
+      {
+            "id":"311001",
+            "name": "Loopafstand huisarts",
+            "layer": "cog-layer"
+      }
+    ]
+  }
+]
