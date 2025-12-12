@@ -31,8 +31,8 @@ function App() {
       </div>
 
       <ScrollArea className="text-opacity-20
-      h-200 w-100 rounded-md border 
-      absolute top-4 left-2 z-50 bg-white/85 shadow-lg
+      h-200 w-100 rounded-md border-1 border-[rgba(3,68,220,0.3)]
+      absolute top-4 left-2 z-50 bg-white/85 
       ">
        <Treeview mapJSON={mapJSON}/>
       </ScrollArea>
