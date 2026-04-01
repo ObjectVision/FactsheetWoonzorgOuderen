@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Scrollable Story with Sticky Maps</title>
+  <style>
+    :root {
+      --bg: #f7fafc;
+      --card: #ffffff;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --maxwidth: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: #111827;
+      line-height: 1.6;
+    }
+
+    .page {
+      display: flex;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      width: 100%;
+      max-width: var(--maxwidth);
+      align-items: start;
+    }
+
+    /* Story text on the left */
+    .story {
+      background: var(--card);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .story section {
+      margin-bottom: 4rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .story h2 {
+      margin-top: 0;
+      color: var(--accent);
+    }
+
+    /* Maps column */
+    .maps {
+      position: relative;
+    }
+
+    .sticky-maps {
+      position: sticky;
+      top: 2rem;
+      height: 80vh;
+      background: transparent;
+      overflow: hidden;
+      border-radius: 1rem;
+    }
+
+    .map-frame {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 1rem;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    .map-frame.active {
+      opacity: 1;
+      z-index: 2;
+    }
+
+    /* Responsive stacking on small screens */
+    @media (max-width: 900px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+      .sticky-maps {
+        position: relative;
+        height: 300px;
+        margin-bottom: 1rem;
+      }
+      .map-frame {
+        position: absolute;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page">
+    <div class="content">
+      <!-- LEFT: Story text -->
+      <article class="story">
+        <section data-map="map1">
+          <h2>Chapter 1 — The Journey Begins</h2>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lacinia, 
+            magna et cursus interdum, justo nisl posuere purus, sit amet faucibus 
+            lectus urna vel leo. Fusce in nulla eget lectus ullamcorper sagittis.
+          </p>
+          <p>
+            Donec eget nulla vel erat bibendum blandit. Quisque blandit leo ut justo 
+            ullamcorper, sit amet hendrerit lorem mattis. Integer ac nibh nec sem 
+            posuere feugiat.
+          </p>
+        </section>
+
+        <section data-map="map2">
+          <h2>Chapter 2 — The River Bend</h2>
+          <p>
+            Cras non cursus mi. Integer facilisis augue ac enim ullamcorper, nec 
+            vehicula lectus viverra. Morbi finibus ante nec metus vestibulum faucibus.
+          </p>
+          <p>
+            Maecenas a sodales sapien, sit amet dapibus neque. Vestibulum at volutpat 
+            odio, sit amet convallis lacus. Sed gravida ex id faucibus ultricies.
+          </p>
+        </section>
+
+        <section data-map="map3">
+          <h2>Chapter 3 — The Hidden Valley</h2>
+          <p>
+            Phasellus imperdiet sapien a lorem feugiat, eget efficitur turpis 
+            convallis. Vivamus at ex nunc. Sed nec metus vel augue eleifend 
+            tincidunt at at velit.
+          </p>
+          <p>
+            Curabitur ac dictum augue. Donec ac lectus ac purus elementum tincidunt 
+            nec et eros. Suspendisse id tincidunt mi.
+          </p>
+        </section>
+
+        <section data-map="map4">
+          <h2>Chapter 4 — Homecoming</h2>
+          <p>
+            Vivamus nec orci eu magna cursus finibus. Morbi finibus diam vitae 
+            tristique pharetra. Fusce posuere, felis non pulvinar tempor, magna 
+            risus gravida lacus, eget sodales enim dolor nec sem.
+          </p>
+          <p>
+            Sed condimentum turpis eu arcu commodo vehicula. Duis tristique 
+            pellentesque augue, ac pretium lectus fermentum sed.
+          </p>
+        </section>
+      </article>
+
+      <!-- RIGHT: Sticky maps -->
+      <aside class="maps">
+        <div class="sticky-maps">
+          <iframe
+            id="map1"
+            class="map-frame active"
+            title="Map 1"
+            srcdoc='
+              <style>
+                body {margin:0;display:flex;align-items:center;justify-content:center;font-family:sans-serif;color:#2563eb;background:#eff6ff;}
+              </style>
+              <div><strong>Map 1</strong><br><small>(replace srcdoc with your map embed)</small></div>'
+          ></iframe>
+
+          <iframe
+            id="map2"
+            class="map-frame"
+            title="Map 2"
+            srcdoc='
+              <style>
+                body {margin:0;display:flex;align-items:center;justify-content:center;font-family:sans-serif;color:#16a34a;background:#ecfdf5;}
+              </style>
+              <div><strong>Map 2</strong><br><small>(replace srcdoc with your map embed)</small></div>'
+          ></iframe>
+
+          <iframe
+            id="map3"
+            class="map-frame"
+            title="Map 3"
+            srcdoc='
+              <style>
+                body {margin:0;display:flex;align-items:center;justify-content:center;font-family:sans-serif;color:#9333ea;background:#f5f3ff;}
+              </style>
+              <div><strong>Map 3</strong><br><small>(replace srcdoc with your map embed)</small></div>'
+          ></iframe>
+
+          <iframe
+            id="map4"
+            class="map-frame"
+            title="Map 4"
+            srcdoc='
+              <style>
+                body {margin:0;display:flex;align-items:center;justify-content:center;font-family:sans-serif;color:#f97316;background:#fff7ed;}
+              </style>
+              <div><strong>Map 4</strong><br><small>(replace srcdoc with your map embed)</small></div>'
+          ></iframe>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Simple scroll observer to change active map
+    const sections = document.querySelectorAll(".story section");
+    const mapFrames = document.querySelectorAll(".map-frame");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const mapId = entry.target.getAttribute("data-map");
+            mapFrames.forEach((f) => f.classList.remove("active"));
+            document.getElementById(mapId)?.classList.add("active");
+          }
+        });
+      },
+      {
+        threshold: 0.5,
+      }
+    );
+
+    sections.forEach((sec) => observer.observe(sec));
+  </script>
+</body>
+</html>
